@@ -1,0 +1,61 @@
+<Facturi>
+	<Factura>
+		<Antet>
+			<FurnizorNume>Calcio Sport srl                                                    </FurnizorNume>
+			<FurnizorCIF>RO30056615</FurnizorCIF>
+			<FurnizorNrRegCom>J12/993/2012    </FurnizorNrRegCom>
+			<FurnizorCapital>200.00</FurnizorCapital>
+			<FurnizorAdresa>Cluj-Napoca str. P.L. A.V.Voevod nr. 53B ap. E14 jud. CLUJ</FurnizorAdresa>
+			<FurnizorBanca>Transilvania                                    </FurnizorBanca>
+			<FurnizorIBAN>RO26BTRL01301202C69521XX           </FurnizorIBAN>
+			<FurnizorInformatiiSuplimentare>Telefon 0767864883  Email dori_panin@yahoo.com
+Banca Transilvania 
+IBAN RO26BTRL01301202C69521XX</FurnizorInformatiiSuplimentare>
+			<ClientNume>ANTISTESCU PAULA CAB AVOCAT                                     </ClientNume>
+			<ClientInformatiiSuplimentare>                                                                                                                                                                                                        </ClientInformatiiSuplimentare>
+			<ClientCIF>28304352            </ClientCIF>
+			<ClientNrRegCom>                </ClientNrRegCom>
+			<ClientAdresa> Judetul BRAILA, calea dorobantilor nr 2/20</ClientAdresa>
+			<ClientBanca>TREZORERIA STATULUI                             </ClientBanca>
+			<ClientIBAN>BT                                  </ClientIBAN>
+			<FacturaNumar>149             </FacturaNumar>
+			<FacturaData>13.04.2017</FacturaData>
+			<FacturaScadenta>13.04.2017</FacturaScadenta>
+			<FacturaTaxareInversa>Nu</FacturaTaxareInversa>
+			<FacturaTVAIncasare>Nu</FacturaTVAIncasare>
+			<FacturaInformatiiSuplimentare>                                                                                                   </FacturaInformatiiSuplimentare>
+			<FacturaMoneda>RON</FacturaMoneda>
+			<FacturaCotaTVA>TVA (19%)</FacturaCotaTVA>
+			<FacturaGreutate>0.000</FacturaGreutate>
+		</Antet>
+		<Detalii>
+			<Continut>
+				<Linie>
+					<LinieNrCrt>1</LinieNrCrt>
+					<Descriere>PANTOF SPORT OK</Descriere>
+					<CodArticolFurnizor/>
+					<CodArticolClient/>
+					<CodBare>4003425775870</CodBare>
+					<InformatiiSuplimentare>CB: 4003425775870</InformatiiSuplimentare>
+					<UM>buc</UM>
+					<Cantitate>1.00</Cantitate>
+					<Pret>343.698</Pret>
+					<Valoare>343.70</Valoare>
+					<ProcTVA>19</ProcTVA>
+					<TVA>65.30</TVA>
+				</Linie>
+			</Continut>
+			<txtObservatii1/>
+		</Detalii>
+		<Sumar>
+			<TotalValoare>343.70</TotalValoare>
+			<TotalTVA>65.30</TotalTVA>
+			<Total>409.00</Total>
+		</Sumar>
+		<Observatii>
+			<txtObservatii/>
+			<SoldClient>In evidentele noastre, la data 13.04.2017, soldul este 0.00 RON</SoldClient>
+			<ModalitatePlata/>
+		</Observatii>
+	</Factura>
+</Facturi>
