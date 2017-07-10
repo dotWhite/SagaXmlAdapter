@@ -1,0 +1,119 @@
+@model IEnumerable<SagaXmlAdapter.Web.Models.InvoiceHeader>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Number)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IssueDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DueDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.InversTaxing)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VatCollecting)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Currecy)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.VAT)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Weight)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalValue)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalVat)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalAmount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Observations)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ClientSoldInfo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PaymentMethod)
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Number)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IssueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InversTaxing)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VatCollecting)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Currecy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VAT)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Weight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalVat)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Observations)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientSoldInfo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaymentMethod)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

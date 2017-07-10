@@ -7,6 +7,6 @@ namespace SagaXmlAdapter.Web.Models
 {
     public class Client: Company
     {
-        public Tenant Tenant { get; set; }
+        public virtual Tenant Tenant { get; set; }
     }
 }

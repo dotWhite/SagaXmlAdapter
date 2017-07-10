@@ -26,5 +26,11 @@ namespace SagaXmlAdapter.Web.Data
         public DbSet<SagaXmlAdapter.Web.Models.Client> Client { get; set; }
 
         public DbSet<SagaXmlAdapter.Web.Models.Provider> Provider { get; set; }
+
+        public DbSet<SagaXmlAdapter.Web.Models.Tenant> Tenant { get; set; }
+
+        public DbSet<SagaXmlAdapter.Web.Models.InvoiceHeader> InvoiceHeader { get; set; }
+
+        public DbSet<SagaXmlAdapter.Web.Models.InvoiceDetail> InvoiceDetail { get; set; }
     }
 }
