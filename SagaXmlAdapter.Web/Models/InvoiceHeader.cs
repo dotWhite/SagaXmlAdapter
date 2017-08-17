@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SagaXmlAdapter.Web.Models
 {
@@ -33,5 +36,7 @@ namespace SagaXmlAdapter.Web.Models
         public string Observations { get; set; }
         public string ClientSoldInfo { get; set; }
         public string PaymentMethod { get; set; }
+
+        public IFormFile CsvFile { get; set; }
     }
 }

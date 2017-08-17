@@ -6,7 +6,7 @@
 
 <h2>Create</h2>
 
-<form asp-action="Create">
+<form asp-action="Create" enctype="multipart/form-data">
     <div class="form-horizontal">
         <h4>InvoiceHeader</h4>
         <hr />
@@ -116,6 +116,13 @@
             <div class="col-md-10">
                 <input asp-for="PaymentMethod" class="form-control" />
                 <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            @*<label asp-for="CsvFile" class="col-md-2 control-label">Upload File</label>*@
+            <div class="col-md-10">
+                <input asp-for="CsvFile" type="file" class="btn-file"  />
+                <a asp-action="UploadFile">Upload File</a> |
             </div>
         </div>
         <div class="form-group">
