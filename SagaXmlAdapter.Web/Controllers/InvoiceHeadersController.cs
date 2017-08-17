@@ -52,6 +52,7 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders/Create
         public IActionResult Create()
         {
+            UploadFile();
             return View();
         }
 
@@ -68,6 +69,7 @@ namespace SagaXmlAdapter.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
+           
             return View(invoiceHeader);
         }
 
@@ -158,62 +160,44 @@ namespace SagaXmlAdapter.Web.Controllers
 
         [HttpPost, ActionName("Upload")]
        // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadFile(IFormFile file)
+        public IActionResult UploadFile()
         {
-            var upload = Path.Combine(_hostingEnvironment.WebRootPath + file.FileName);
-            if(file != null && file.Length > 0)
+            var invoices = new List<InvoiceDetail>();
+
+            String[] values = System.IO.File.ReadAllLines(_hostingEnvironment.WebRootPath + "\\" + "PTANDI.csv");
+            foreach(var value in values)
             {
-                using (var fileStream = new FileStream(Path.Combine(upload, file.FileName), FileMode.Open, FileAccess.Read))
-                {
-                    if (file.Name.EndsWith(".csv"))
-                    {
-                        var code = new List<String>();
-                        var name = new List<String>();
-                        var measurement = new List<String>();
-                        var tva = new List<String>();
-                        var den_tip = new List<String>();
-                        var stoc = new List<String>();
-                        var pretAchizitie = new List<String>();
-                        var pretVanzare = new List<String>();
-                        var codBare = new List<String>();
+                var line = value.Split(';');
+                //add values, nullchecks
+                var invoice = new InvoiceDetail() { CodeClient = line[0], AdditionalInfo = line[1] };
+                invoices.Add(invoice);
+            }
 
-                        //using (var fileStream = new FileStream(Path.Combine(upload, file.FileName), FileMode.Open, FileAccess.Read))
-                        //{
-                        using (var reader = new StreamReader(fileStream))
-                        {
-                            //read from file
-                            StreamReader streamReader = new StreamReader(fileStream);
-                            string line = streamReader.ReadLine();
-
-                            var fields = line.Split(new Char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-
-                            code.Add(fields[0]);
-
-                            if (fields.Length > 1)
-                                name.Add(fields[1]);
-                            if (fields.Length > 2)
-                                measurement.Add(fields[2]);
-                            if (fields.Length > 3)
-                                tva.Add(fields[3]);
-                            if (fields.Length > 4)
-                                den_tip.Add(fields[4]);
-                            if (fields.Length > 5)
-                                stoc.Add(fields[5]);
-                            if (fields.Length > 6)
-                                den_tip.Add(fields[6]);
-                            if (fields.Length > 7)
-                                pretAchizitie.Add(fields[7]);
-                            if (fields.Length > 8)
-                                pretVanzare.Add(fields[8]);
-                            if (fields.Length > 9)
-                                codBare.Add(fields[9]);
-                        }
-                    }
-                    // Saves the uploaded file to the specified location. Replace for "SaveAsAsync"
-                    await file.CopyToAsync(fileStream);
-                }
-            }  
             return View();
+
+
+            //if(file != null && file.Length > 0)
+            //{
+            //    var upload = Path.Combine(_hostingEnvironment.WebRootPath + file.FileName);
+            //    using (var fileStream = new FileStream(Path.Combine(upload, file.FileName), FileMode.Open, FileAccess.Read))
+            //    {
+            //        if (file.Name.EndsWith(".csv"))
+            //        {
+            //            //using (var fileStream = new FileStream(Path.Combine(upload, file.FileName), FileMode.Open, FileAccess.Read))
+            //            //{
+            //            using (var reader = new StreamReader(fileStream))
+            //            {
+            //                //read from file
+            //                StreamReader streamReader = new StreamReader(fileStream);
+            //                string line = streamReader.ReadLine();
+            //                var fields = line.Split(new Char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            //                code.Add(fields[0]);
+            //            }
+            //        }
+            //        // Saves the uploaded file to the specified location. Replace for "SaveAsAsync"
+            //        await file.CopyToAsync(fileStream);
+            //    }
+            //}  
         }
     }
 }
