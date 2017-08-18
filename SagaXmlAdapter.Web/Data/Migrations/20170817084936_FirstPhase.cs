@@ -115,7 +115,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
                     VAT = table.Column<decimal>(nullable: false),
                     VatCollecting = table.Column<bool>(nullable: false),
                     Weight = table.Column<decimal>(nullable: false),
-                    CsvFile = table.Column<IFormFile>(nullable: true)
+                   // CsvFile = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

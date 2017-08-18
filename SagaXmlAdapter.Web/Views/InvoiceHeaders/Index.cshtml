@@ -57,9 +57,9 @@
                 <th>
                     @Html.DisplayNameFor(model => model.PaymentMethod)
                 </th>
-                <th>
+                @*<th>
                     @Html.DisplayNameFor(model => model.CsvFile)
-                </th>
+                </th>*@
             <th></th>
         </tr>
     </thead>
@@ -111,9 +111,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.PaymentMethod)
             </td>
-            <td>
+            @*<td>
                 @Html.DisplayFor(modelItem => item.CsvFile)
-            </td>
+            </td>*@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

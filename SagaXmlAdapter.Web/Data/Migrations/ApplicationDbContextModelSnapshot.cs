@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using SagaXmlAdapter.Web.Data;
-using Microsoft.AspNetCore.Http;
 
 namespace SagaXmlAdapter.Web.Data.Migrations
 {
@@ -251,6 +250,8 @@ namespace SagaXmlAdapter.Web.Data.Migrations
 
                     b.Property<string>("ClientSoldInfo");
 
+                   // b.Property<string>("CsvFile");
+
                     b.Property<string>("Currecy");
 
                     b.Property<string>("Description");
@@ -266,8 +267,6 @@ namespace SagaXmlAdapter.Web.Data.Migrations
                     b.Property<string>("Observations");
 
                     b.Property<string>("PaymentMethod");
-
-                    b.Property<IFormFile>("CsvFile");
 
                     b.Property<int?>("ProviderId");
 

@@ -268,7 +268,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
 
                     b.Property<string>("PaymentMethod");
 
-                    b.Property<IFormFile>("CsvFile");
+                    //b.Property<string>("CsvFile");
 
                     b.Property<int?>("ProviderId");
 
