@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,5 +22,7 @@ namespace SagaXmlAdapter.Web.Models
         public decimal VatPercentage { get; set; }
         public decimal VAT { get; set; }
         public string Observations { get; set; }
+
+        public FileDetails FileDetail { get; set; }
     }
 }

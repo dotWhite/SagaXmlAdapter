@@ -36,8 +36,5 @@ namespace SagaXmlAdapter.Web.Models
         public string Observations { get; set; }
         public string ClientSoldInfo { get; set; }
         public string PaymentMethod { get; set; }
-
-        // Instead of string change it to InvoiceDetail
-       // public string CsvFile { get; set; }
     }
 }

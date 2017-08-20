@@ -17,12 +17,10 @@ namespace SagaXmlAdapter.Web.Controllers
     public class InvoiceHeadersController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public InvoiceHeadersController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+        public InvoiceHeadersController(ApplicationDbContext context)
         {
             _context = context;
-            _hostingEnvironment = hostingEnvironment;
         }
 
         // GET: InvoiceHeaders
@@ -52,7 +50,7 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders/Create
         public IActionResult Create()
         {
-            UploadFile();
+            //UploadFile();
             return View();
         }
 
@@ -156,51 +154,6 @@ namespace SagaXmlAdapter.Web.Controllers
         private bool InvoiceHeaderExists(int id)
         {
             return _context.InvoiceHeader.Any(e => e.Id == id);
-        }
-
-        [HttpPost, ActionName("Upload")]
-        // [ValidateAntiForgeryToken]
-        public IActionResult UploadFile()
-        {
-            var path = Path.Combine(_hostingEnvironment.WebRootPath + "\\" + "PTANDI.csv");
-            ConvertCSVtoList(path);
-            return View();
-        }
-
-        private List<InvoiceDetail> ConvertCSVtoList(string path)
-        {
-            var invoices = new List<InvoiceDetail>();
-
-            String[] values = System.IO.File.ReadAllLines(path);
-            var valuesWithoutHeader = values.Skip(1);
-
-            if(valuesWithoutHeader != null)
-            {
-                foreach (var value in valuesWithoutHeader)
-                {
-                    var line = value.Split(';');
-
-                    if (line.Length > 0)
-                    {
-                        var invoice = new InvoiceDetail()
-                        {
-                            CodeProvider = line[0],
-                            Name = line[1],
-                            MeasurementUnit = line[2],
-                            VAT = Decimal.Parse(line[3]),
-                            AdditionalInfo = line[4],
-                            Quantity = Decimal.Parse(line[5]),
-                            Price = Decimal.Parse(line[6]),
-                            VatPercentage = Decimal.Parse(line[7]),
-                            BarCode = line[8]
-                        };
-
-                        invoices.Add(invoice);
-                    }
-                }
-            }
-         
-            return invoices;
         }
     }
 }

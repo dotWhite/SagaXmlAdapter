@@ -7,16 +7,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SagaXmlAdapter.Web.Data;
 using SagaXmlAdapter.Web.Models;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http.Headers;
 
 namespace SagaXmlAdapter.Web.Controllers
 {
     public class InvoiceDetailsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public InvoiceDetailsController(ApplicationDbContext context)
+        public InvoiceDetailsController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
         {
-            _context = context;    
+            _context = context;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         // GET: InvoiceDetails
@@ -148,6 +154,65 @@ namespace SagaXmlAdapter.Web.Controllers
         private bool InvoiceDetailExists(int id)
         {
             return _context.InvoiceDetail.Any(e => e.Id == id);
+        }
+
+        [HttpPost]
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadFile(List<IFormFile> files)
+        {
+            var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
+
+            //var invoices = new List<InvoiceDetail>();
+            var fileDetails = new FileDetails();
+
+            foreach (var formFile in files)
+            {
+                if (formFile.Length > 0)
+                {
+                    var fileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
+
+                    using (var inputStream = new StreamReader(formFile.OpenReadStream()))
+                    {
+                        var items = await inputStream.ReadToEndAsync();
+
+                        fileDetails.FileName = fileName;
+                        fileDetails.FileType = formFile.ContentType;
+                        fileDetails.Length = Convert.ToInt32(formFile.Length);
+                        fileDetails.Content = ConvertCSVtoList(items);
+                    }
+                }
+            }
+
+            return View(fileDetails);
+        }
+
+        private List<InvoiceDetail> ConvertCSVtoList(string stream)
+        {
+            var invoices = new List<InvoiceDetail>();
+
+            var line = stream.Split('\n');
+            var valuesWithoutHeader = line.Skip(1);
+            foreach (var item in valuesWithoutHeader)
+            {
+                var splittedString = item.Split(';');
+
+                var invoice = new InvoiceDetail()
+                {
+                    CodeProvider = splittedString[0],
+                    Name = splittedString[1],
+                    MeasurementUnit = splittedString[2],
+                    VAT = Decimal.Parse(splittedString[3]),
+                    AdditionalInfo = splittedString[4],
+                    Quantity = Decimal.Parse(splittedString[5]),
+                    Price = Decimal.Parse(splittedString[6]),
+                    VatPercentage = Decimal.Parse(splittedString[7]),
+                    BarCode = splittedString[8]
+                };
+
+                invoices.Add(invoice);
+
+            }
+            return invoices;
         }
     }
 }
