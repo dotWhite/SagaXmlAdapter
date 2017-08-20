@@ -29,7 +29,7 @@ namespace SagaXmlAdapter.Web.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.InvoiceDetail.ToListAsync());
-        }
+        } 
 
         // GET: InvoiceDetails/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -79,12 +79,34 @@ namespace SagaXmlAdapter.Web.Controllers
                 return NotFound();
             }
 
-            var invoiceDetail = await _context.InvoiceDetail.SingleOrDefaultAsync(m => m.Id == id);
-            if (invoiceDetail == null)
+            var model = new InvoiceDetail();
+
+            model = await _context.InvoiceDetail.SingleOrDefaultAsync(m => m.Id == id);
+
+            var getProviders = await _context.Provider
+                .OrderBy(x => x.Name)
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    Value = x.Name
+                }).ToListAsync();
+
+            var getClients = await _context.Client
+                .OrderBy(x => x.Name)
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    Value = x.Name
+                }).ToListAsync();
+
+            model.ProviderList = new SelectList(getProviders, "Id", "Value");
+            model.ClientList = new SelectList(getClients, "Id", "Value");
+
+            if (model == null)
             {
                 return NotFound();
             }
-            return View(invoiceDetail);
+            return View(model);
         }
 
         // POST: InvoiceDetails/Edit/5
@@ -162,7 +184,7 @@ namespace SagaXmlAdapter.Web.Controllers
         {
             var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
 
-            //var invoices = new List<InvoiceDetail>();
+            var invoices = new List<InvoiceDetail>();
             var fileDetails = new FileDetails();
 
             foreach (var formFile in files)
@@ -182,8 +204,10 @@ namespace SagaXmlAdapter.Web.Controllers
                     }
                 }
             }
+            _context.Update(fileDetails);
+            await _context.SaveChangesAsync();
 
-            return View(fileDetails);
+            return View(invoices);
         }
 
         private List<InvoiceDetail> ConvertCSVtoList(string stream)

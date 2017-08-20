@@ -12,6 +12,21 @@
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
+
+        <div class="form-group">
+            <label asp-for="CodeProvider" class="col-md-2 control-label">Provider</label>
+            <div class="col-md-10">
+                <select asp-for="CodeProvider" asp-items="@Model.ProviderList"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="CodeClient" class="col-md-2 control-label">Client</label>
+            <div class="col-md-10">
+                <select asp-for="CodeClient" asp-items="@Model.ClientList"></select>
+            </div>
+        </div>
+       
+        &nbsp;
         <div class="form-group">
             <label asp-for="Number" class="col-md-2 control-label"></label>
             <div class="col-md-10">
