@@ -35,5 +35,8 @@ namespace SagaXmlAdapter.Web.Data
         public DbSet<SagaXmlAdapter.Web.Models.InvoiceHeader> InvoiceHeader { get; set; }
 
         public DbSet<SagaXmlAdapter.Web.Models.InvoiceDetail> InvoiceDetail { get; set; }
+
+        public DbSet<SagaXmlAdapter.Web.Models.FileDetail> FileDetail { get; set; }
+
     }
 }

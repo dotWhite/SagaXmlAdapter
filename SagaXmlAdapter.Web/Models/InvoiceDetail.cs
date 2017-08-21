@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace SagaXmlAdapter.Web.Models
         public decimal VAT { get; set; }
         public string Observations { get; set; }
 
-        public virtual FileDetails FileDetail { get; set; }
+        public virtual FileDetail FileDetail { get; set; }
         public SelectList ProviderList { get; set; }
         public SelectList ClientList { get; set; }
     }

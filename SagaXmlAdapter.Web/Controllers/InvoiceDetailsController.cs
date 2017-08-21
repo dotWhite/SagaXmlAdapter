@@ -180,12 +180,14 @@ namespace SagaXmlAdapter.Web.Controllers
 
         [HttpPost]
         // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadFile(List<IFormFile> files)
+        public async Task<IActionResult> UploadFile(List<IFormFile> files, [Bind("Id,Number,Name,CodeProvider,CodeClient,BarCode,AdditionalInfo,MeasurementUnit,Quantity,Price,Value,VatPercentage,VAT,Observations")] InvoiceDetail invoiceDetail)
         {
             var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
 
-            var invoices = new List<InvoiceDetail>();
-            var fileDetails = new FileDetails();
+            //var invoiceDetail = new InvoiceDetail();
+            //var invoiceDetail = _context.InvoiceDetail.SingleOrDefaultAsync(x => x.Id == id);
+
+            var fileDetail = new FileDetail();
 
             foreach (var formFile in files)
             {
@@ -196,18 +198,20 @@ namespace SagaXmlAdapter.Web.Controllers
                     using (var inputStream = new StreamReader(formFile.OpenReadStream()))
                     {
                         var items = await inputStream.ReadToEndAsync();
-
-                        fileDetails.FileName = fileName;
-                        fileDetails.FileType = formFile.ContentType;
-                        fileDetails.Length = Convert.ToInt32(formFile.Length);
-                        fileDetails.Content = ConvertCSVtoList(items);
+                       // foreach(var fileDetail in fileDetails)
+                       // {
+                            fileDetail.FileName = fileName;
+                            fileDetail.FileType = formFile.ContentType;
+                            fileDetail.Length = Convert.ToInt32(formFile.Length);
+                            fileDetail.Content = ConvertCSVtoList(items);
+                       // }
                     }
                 }
-            }
-            _context.Update(fileDetails);
-            await _context.SaveChangesAsync();
 
-            return View(invoices);
+                invoiceDetail.FileDetail = fileDetail;
+            }   
+
+            return View(invoiceDetail);
         }
 
         private List<InvoiceDetail> ConvertCSVtoList(string stream)

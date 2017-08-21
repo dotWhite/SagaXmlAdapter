@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SagaXmlAdapter.Web.Models
 {
-    public class FileDetails
+    public class FileDetail
     {
         [Key]
         public int Id { get; set; }
