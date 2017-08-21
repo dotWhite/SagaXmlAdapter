@@ -1,4 +1,4 @@
-@model SagaXmlAdapter.Web.Models.InvoiceDetail
+@model SagaXmlAdapter.Web.Models.InvoiceDetailViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -11,114 +11,116 @@
         <h4>InvoiceDetail</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="InvoiceDetail.Id" />
 
         <div class="form-group">
-            <label asp-for="CodeProvider" class="col-md-2 control-label">Provider</label>
+            <label asp-for="InvoiceDetail.CodeProvider" class="col-md-2 control-label">Provider</label>
             <div class="col-md-10">
-                <select asp-for="CodeProvider" asp-items="@Model.ProviderList"></select>
+                <select asp-for="InvoiceDetail.CodeProvider" asp-items="@Model.InvoiceDetail.ProviderList"></select>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="CodeClient" class="col-md-2 control-label">Client</label>
+            <label asp-for="InvoiceDetail.CodeClient" class="col-md-2 control-label">Client</label>
             <div class="col-md-10">
-                <select asp-for="CodeClient" asp-items="@Model.ClientList"></select>
+                <select asp-for="InvoiceDetail.CodeClient" asp-items="@Model.InvoiceDetail.ClientList"></select>
             </div>
         </div>
        
         &nbsp;
         <div class="form-group">
-            <label asp-for="Number" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.Number" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Number" class="form-control" />
-                <span asp-validation-for="Number" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.Number" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.Number" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Name" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.Name" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.Name" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="CodeProvider" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.CodeProvider" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="CodeProvider" class="form-control" />
-                <span asp-validation-for="CodeProvider" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.CodeProvider" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.CodeProvider" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="CodeClient" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.CodeClient" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="CodeClient" class="form-control" />
-                <span asp-validation-for="CodeClient" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.CodeClient" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.CodeClient" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="BarCode" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.BarCode" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="BarCode" class="form-control" />
-                <span asp-validation-for="BarCode" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.BarCode" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.BarCode" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="AdditionalInfo" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.AdditionalInfo" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="AdditionalInfo" class="form-control" />
-                <span asp-validation-for="AdditionalInfo" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.AdditionalInfo" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.AdditionalInfo" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="MeasurementUnit" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.MeasurementUnit" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="MeasurementUnit" class="form-control" />
-                <span asp-validation-for="MeasurementUnit" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.MeasurementUnit" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.MeasurementUnit" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Quantity" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.Quantity" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.Quantity" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.Quantity" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Price" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.Price" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.Price" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.Price" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Value" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.Value" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Value" class="form-control" />
-                <span asp-validation-for="Value" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.Value" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.Value" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="VatPercentage" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.VatPercentage" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="VatPercentage" class="form-control" />
-                <span asp-validation-for="VatPercentage" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.VatPercentage" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.VatPercentage" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="VAT" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.VAT" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="VAT" class="form-control" />
-                <span asp-validation-for="VAT" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.VAT" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.VAT" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Observations" class="col-md-2 control-label"></label>
+            <label asp-for="InvoiceDetail.Observations" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="Observations" class="form-control" />
-                <span asp-validation-for="Observations" class="text-danger"></span>
+                <input asp-for="InvoiceDetail.Observations" class="form-control" />
+                <span asp-validation-for="InvoiceDetail.Observations" class="text-danger"></span>
             </div>
         </div>
-        &nbsp; @{ Html.RenderPartial("_CsvTable"); }
+        &nbsp;
+
+        @{ Html.Partial("_CsvTable", Model.AllInvoiceDetails); }
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
@@ -127,7 +129,19 @@
         </div>
     </div>
 </form>
-
+<form method="post" runat="server" enctype="multipart/form-data" asp-controller="InvoiceDetails" asp-action="UploadFile">
+    <div class="form-group">
+        <div class="col-md-10">
+            <p>Upload one or more files:</p>
+            <input type="file" name="files" multiple />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+            <input type="submit" value="UploadFile" />
+        </div>
+    </div>
+</form>
 
 <div>
     <a asp-action="Index">Back to List</a>

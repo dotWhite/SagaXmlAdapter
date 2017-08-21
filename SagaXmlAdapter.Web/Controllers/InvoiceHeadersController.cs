@@ -50,7 +50,6 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders/Create
         public IActionResult Create()
         {
-            //UploadFile();
             return View();
         }
 

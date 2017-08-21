@@ -1,4 +1,12 @@
-﻿<form method="post" runat="server" enctype="multipart/form-data" asp-controller="InvoiceDetails" asp-action="UploadFile">
+﻿@model IEnumerable<SagaXmlAdapter.Web.Models.InvoiceDetailViewModel>
+
+@{
+    ViewData["Title"] = "Upload";
+}
+
+<h2>Upload</h2>
+
+<form method="post" runat="server" enctype="multipart/form-data" asp-controller="InvoiceDetails" asp-action="UploadFile">
     <div class="form-group">
         <div class="col-md-10">
             <p>Upload one or more files:</p>
@@ -7,7 +15,83 @@
     </div>
     <div class="form-group">
         <div class="col-md-10">
-            <input type="submit" value="Upload" />
+            <input type="submit" value="Upload"/>
         </div>
     </div>
 </form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().CodeProvider)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().MeasurementUnit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().VAT)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().AdditionalInfo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().VatPercentage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().BarCode)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.First().AllInvoiceDetails)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CodeProvider)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MeasurementUnit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VAT)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AdditionalInfo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VatPercentage)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BarCode)
+                </td>
+                
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

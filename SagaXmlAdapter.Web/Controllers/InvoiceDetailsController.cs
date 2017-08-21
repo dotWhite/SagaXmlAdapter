@@ -79,33 +79,38 @@ namespace SagaXmlAdapter.Web.Controllers
                 return NotFound();
             }
 
-            var model = new InvoiceDetail();
+            //var model = new InvoiceDetail();
+            var model = new InvoiceDetailViewModel();
 
-            model = await _context.InvoiceDetail.SingleOrDefaultAsync(m => m.Id == id);
+            model.InvoiceDetail = await _context.InvoiceDetail.SingleOrDefaultAsync(m => m.Id == id);
+            if(model.InvoiceDetail != null)
+            {
+                var getProviders = await _context.Provider
+               .OrderBy(x => x.Name)
+               .Select(x => new
+               {
+                   Id = x.Id,
+                   Value = x.Name
+               }).ToListAsync();
 
-            var getProviders = await _context.Provider
-                .OrderBy(x => x.Name)
-                .Select(x => new
-                {
-                    Id = x.Id,
-                    Value = x.Name
-                }).ToListAsync();
+                var getClients = await _context.Client
+                    .OrderBy(x => x.Name)
+                    .Select(x => new
+                    {
+                        Id = x.Id,
+                        Value = x.Name
+                    }).ToListAsync();
 
-            var getClients = await _context.Client
-                .OrderBy(x => x.Name)
-                .Select(x => new
-                {
-                    Id = x.Id,
-                    Value = x.Name
-                }).ToListAsync();
+                model.InvoiceDetail.ProviderList = new SelectList(getProviders, "Id", "Value");
+                model.InvoiceDetail.ClientList = new SelectList(getClients, "Id", "Value");
 
-            model.ProviderList = new SelectList(getProviders, "Id", "Value");
-            model.ClientList = new SelectList(getClients, "Id", "Value");
-
-            if (model == null)
+                model.AllInvoiceDetails = _context.InvoiceDetail.ToList();
+            } 
+            else
             {
                 return NotFound();
             }
+           
             return View(model);
         }
 
@@ -209,8 +214,11 @@ namespace SagaXmlAdapter.Web.Controllers
                 }
 
                 invoiceDetail.FileDetail = fileDetail;
-            }   
+            }
 
+            //_context.Add(invoiceDetail);
+            //await _context.SaveChangesAsync();
+            //return fileDetail.Content;
             return View(invoiceDetail);
         }
 
