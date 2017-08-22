@@ -27,7 +27,7 @@ namespace SagaXmlAdapter.Web.Models
         public decimal VAT { get; set; }
         public decimal Weight { get; set; }
 
-        public ICollection<InvoiceDetail> Details { get; private set; }
+        public ICollection<InvoiceDetail> Details { get; set; }
 
         public decimal TotalValue { get; set; }
         public decimal TotalVat { get; set; }

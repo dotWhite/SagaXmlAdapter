@@ -12,6 +12,21 @@
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" asp-for="Id" />
+
+        <div class="form-group">
+            <label asp-for="@Model.Details.First().CodeProvider" class="col-md-2 control-label">Provider</label>
+            <div class="col-md-10">
+                <select asp-for="@Model.Details.First().CodeProvider" asp-items="@Model.Details.First().ProviderList"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="@Model.Details.First().CodeClient" class="col-md-2 control-label">Client</label>
+            <div class="col-md-10">
+                <select asp-for="@Model.Details.First().CodeClient" asp-items="@Model.Details.First().ClientList"></select>
+            </div>
+        </div>
+        &nbsp;
+
         <div class="form-group">
             <label asp-for="Number" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -119,6 +134,10 @@
                 <span asp-validation-for="PaymentMethod" class="text-danger"></span>
             </div>
         </div>
+        &nbsp;
+
+        @{ await Html.RenderPartialAsync("_CsvTable", Model.Details); }
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
@@ -126,6 +145,19 @@
         </div>
     </div>
 </form>
+@*<form method="post" runat="server" enctype="multipart/form-data" asp-controller="InvoiceHeaders" asp-action="UploadFile">
+    <div class="form-group">
+        <div class="col-md-10">
+            <p>Upload one or more files:</p>
+            <input type="file" name="files" multiple />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-10">
+            <input type="submit" value="UploadFile" />
+        </div>
+    </div>
+</form>*@	
 
 <div>
     <a asp-action="Index">Back to List</a>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SagaXmlAdapter.Web.Models.InvoiceDetailViewModel>
+﻿@model IEnumerable<SagaXmlAdapter.Web.Models.InvoiceDetail>
 
 @{
     ViewData["Title"] = "Upload";
@@ -6,7 +6,7 @@
 
 <h2>Upload</h2>
 
-<form method="post" runat="server" enctype="multipart/form-data" asp-controller="InvoiceDetails" asp-action="UploadFile">
+<form method="post" enctype="multipart/form-data" asp-controller="InvoiceHeaders" asp-action="UploadFile">
     <div class="form-group">
         <div class="col-md-10">
             <p>Upload one or more files:</p>
@@ -24,36 +24,36 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().CodeProvider)
+                @Html.DisplayNameFor(model => model.CodeProvider)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().Name)
+                @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().MeasurementUnit)
+                @Html.DisplayNameFor(model => model.MeasurementUnit)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().VAT)
+                @Html.DisplayNameFor(model => model.VAT)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().AdditionalInfo)
+                @Html.DisplayNameFor(model => model.AdditionalInfo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().Quantity)
+                @Html.DisplayNameFor(model => model.Quantity)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().Price)
+                @Html.DisplayNameFor(model => model.Price)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().VatPercentage)
+                @Html.DisplayNameFor(model => model.VatPercentage)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AllInvoiceDetails.First().BarCode)
+                @Html.DisplayNameFor(model => model.BarCode)
             </th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.First().AllInvoiceDetails)
+        @foreach (var item in Model)
         {
             <tr>
                 <td>

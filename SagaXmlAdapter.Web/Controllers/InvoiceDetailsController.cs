@@ -17,12 +17,10 @@ namespace SagaXmlAdapter.Web.Controllers
     public class InvoiceDetailsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public InvoiceDetailsController(ApplicationDbContext context, IHostingEnvironment hostingEnvironment)
+        public InvoiceDetailsController(ApplicationDbContext context)
         {
             _context = context;
-            _hostingEnvironment = hostingEnvironment;
         }
 
         // GET: InvoiceDetails
@@ -79,39 +77,12 @@ namespace SagaXmlAdapter.Web.Controllers
                 return NotFound();
             }
 
-            //var model = new InvoiceDetail();
-            var model = new InvoiceDetailViewModel();
-
-            model.InvoiceDetail = await _context.InvoiceDetail.SingleOrDefaultAsync(m => m.Id == id);
-            if(model.InvoiceDetail != null)
-            {
-                var getProviders = await _context.Provider
-               .OrderBy(x => x.Name)
-               .Select(x => new
-               {
-                   Id = x.Id,
-                   Value = x.Name
-               }).ToListAsync();
-
-                var getClients = await _context.Client
-                    .OrderBy(x => x.Name)
-                    .Select(x => new
-                    {
-                        Id = x.Id,
-                        Value = x.Name
-                    }).ToListAsync();
-
-                model.InvoiceDetail.ProviderList = new SelectList(getProviders, "Id", "Value");
-                model.InvoiceDetail.ClientList = new SelectList(getClients, "Id", "Value");
-
-                model.AllInvoiceDetails = _context.InvoiceDetail.ToList();
-            } 
-            else
+            var invoiceDetail = await _context.InvoiceDetail.SingleOrDefaultAsync(m => m.Id == id);  
+            if(invoiceDetail == null)
             {
                 return NotFound();
             }
-           
-            return View(model);
+            return View(invoiceDetail);
         }
 
         // POST: InvoiceDetails/Edit/5
@@ -181,74 +152,6 @@ namespace SagaXmlAdapter.Web.Controllers
         private bool InvoiceDetailExists(int id)
         {
             return _context.InvoiceDetail.Any(e => e.Id == id);
-        }
-
-        [HttpPost]
-        // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadFile(List<IFormFile> files, [Bind("Id,Number,Name,CodeProvider,CodeClient,BarCode,AdditionalInfo,MeasurementUnit,Quantity,Price,Value,VatPercentage,VAT,Observations")] InvoiceDetail invoiceDetail)
-        {
-            var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
-
-            //var invoiceDetail = new InvoiceDetail();
-            //var invoiceDetail = _context.InvoiceDetail.SingleOrDefaultAsync(x => x.Id == id);
-
-            var fileDetail = new FileDetail();
-
-            foreach (var formFile in files)
-            {
-                if (formFile.Length > 0)
-                {
-                    var fileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
-
-                    using (var inputStream = new StreamReader(formFile.OpenReadStream()))
-                    {
-                        var items = await inputStream.ReadToEndAsync();
-                       // foreach(var fileDetail in fileDetails)
-                       // {
-                            fileDetail.FileName = fileName;
-                            fileDetail.FileType = formFile.ContentType;
-                            fileDetail.Length = Convert.ToInt32(formFile.Length);
-                            fileDetail.Content = ConvertCSVtoList(items);
-                       // }
-                    }
-                }
-
-                invoiceDetail.FileDetail = fileDetail;
-            }
-
-            //_context.Add(invoiceDetail);
-            //await _context.SaveChangesAsync();
-            //return fileDetail.Content;
-            return View(invoiceDetail);
-        }
-
-        private List<InvoiceDetail> ConvertCSVtoList(string stream)
-        {
-            var invoices = new List<InvoiceDetail>();
-
-            var line = stream.Split('\n');
-            var valuesWithoutHeader = line.Skip(1);
-            foreach (var item in valuesWithoutHeader)
-            {
-                var splittedString = item.Split(';');
-
-                var invoice = new InvoiceDetail()
-                {
-                    CodeProvider = splittedString[0],
-                    Name = splittedString[1],
-                    MeasurementUnit = splittedString[2],
-                    VAT = Decimal.Parse(splittedString[3]),
-                    AdditionalInfo = splittedString[4],
-                    Quantity = Decimal.Parse(splittedString[5]),
-                    Price = Decimal.Parse(splittedString[6]),
-                    VatPercentage = Decimal.Parse(splittedString[7]),
-                    BarCode = splittedString[8]
-                };
-
-                invoices.Add(invoice);
-
-            }
-            return invoices;
         }
     }
 }
