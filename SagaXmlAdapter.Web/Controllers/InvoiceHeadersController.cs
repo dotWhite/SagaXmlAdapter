@@ -248,17 +248,18 @@ namespace SagaXmlAdapter.Web.Controllers
             return invoices;
         }
 
-        public async Task<IActionResult> ExportToXML()
+        public FileContentResult ExportToXML()
         {
-            var processXML = ProcessListToXML();
+            var xml = ProcessListToXML();
 
-            if(processXML != null)
-            {
+            XDocument doc = XDocument.Parse(xml);
+            var contentType = "application/xml";
+            var content = xml.ToString();
+            var bytes = Encoding.UTF8.GetBytes(content);
+            var result = new FileContentResult(bytes, contentType);
+            result.FileDownloadName = "Invoice.xml";
 
-            }
-
-            return View();
-
+            return result;
         }
 
         private string ProcessListToXML()
@@ -335,7 +336,6 @@ namespace SagaXmlAdapter.Web.Controllers
                                new XElement("ClientSold", invoiceHeader.ClientSoldInfo),
                                new XElement("PaymentMethod", invoiceHeader.PaymentMethod))));
                 }
-
             }
 
             return xml.ToString();
