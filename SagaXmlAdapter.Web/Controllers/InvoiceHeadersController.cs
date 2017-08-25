@@ -32,8 +32,57 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders
         public async Task<IActionResult> Index()
         {
+            ViewBag.Provider = GetProviderDetails();
+            ViewBag.Client = GetClientDetails();
+
             return View(await _context.InvoiceHeader.ToListAsync());
         }
+
+        public Provider GetProviderById(int id)
+        {
+            var provider = _context.Provider.SingleOrDefault(m => m.Id == id);
+            return provider;
+        }
+
+        public Client GetClientById(int id)
+        {
+            var client = _context.Client.SingleOrDefault(m => m.Id == id);
+            return client;
+        }
+
+        private List<SelectListItem> GetProviderDetails()
+        {
+            var selectList = new List<SelectListItem>();
+            var getProviders = _context.Provider.ToList();
+
+            foreach (var provider in getProviders)
+            {
+                selectList.Add(new SelectListItem
+                {
+                    Text = provider.Name,
+                    Value = provider.Id.ToString(),
+                });
+            }                 
+            return selectList;
+        }
+
+        private List<SelectListItem> GetClientDetails()
+        {
+            var selectList = new List<SelectListItem>();
+            var getClients = _context.Client.ToList();
+
+            foreach (var client in getClients)
+            {
+                selectList.Add(new SelectListItem
+                {
+                    Text = client.Name,
+                    Value = client.Id.ToString(),
+                });
+            }
+
+            return selectList;
+        }
+
 
         // GET: InvoiceHeaders/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -86,33 +135,20 @@ namespace SagaXmlAdapter.Web.Controllers
 
             var model = await _context.InvoiceHeader.SingleOrDefaultAsync(m => m.Id == id);
 
-            model.Details = await _context.InvoiceDetail.ToListAsync();
+            //model.Details = await _context.InvoiceDetail.ToListAsync();
 
-            if (model != null && model.Details != null)
-            {
-                var getProviders = await _context.Provider
-               .OrderBy(x => x.Name)
-               .Select(x => new
-               {
-                   Id = x.Id,
-                   Value = x.Name
-               }).ToListAsync();
+            //if (model != null && model.Details != null)
+            //{
+            //    var getProviders = await _context.Provider.ToListAsync();
+            //    var getClients = await _context.Client.ToListAsync();
 
-                var getClients = await _context.Client
-                    .OrderBy(x => x.Name)
-                    .Select(x => new
-                    {
-                        Id = x.Id,
-                        Value = x.Name
-                    }).ToListAsync();
-
-                foreach (var item in model.Details)
-                {
-                    item.ProviderList = new SelectList(getProviders, "Id", "Value");
-                    item.ClientList = new SelectList(getClients, "Id", "Value");
-                }
-            }
-            else if (model == null)
+            //    foreach (var item in model.Details)
+            //    {
+            //        item.ProviderList = new SelectList(getProviders, "Id", "Value");
+            //        item.ClientList = new SelectList(getClients, "Id", "Value");
+            //    }
+            //}
+            if (model == null)
             {
                 return NotFound();
             }
@@ -280,6 +316,7 @@ namespace SagaXmlAdapter.Web.Controllers
                 {
                     invoiceHeader.Provider = provider;
 
+                    // TO DO: Change tag names in RO
                     xml = new XDocument(new XDeclaration("1.0", "UTF - 8", "yes"),
                         new XElement("InviceHeaders",
                            new XElement("InvoiceHeader",

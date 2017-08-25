@@ -9,117 +9,208 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+@using (Html.BeginForm())
+{
+    <div>
+        <div>
+            <ul>
+                <li>
+                    <div>
+                        @Html.Label("Provider*")
+                        <div>
+                            @Html.DropDownList("ddlProvider", new SelectList(ViewBag.Provider, "Value", "Text"), "Please select a Provider")
+                            <button type="submit" value="See Provider Details" onclick="javascript: ProviderDetails(); return false;" class="btn btn-default">See Provider Details</button>
+                        </div>
+                        <div id="provider-display"></div> <br />
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <ul>
+                <li>
+                    <div>
+                        @Html.Label("Client*")
+                        <div>
+                            @Html.DropDownList("ddlClient", new SelectList(ViewBag.Client, "Value", "Text"), "Please select a Client")
+                            <button type="submit" value="See Client Details" onclick="javascript: ClientDetails(); return false;" class="btn btn-default">See Client Details</button>
+                        </div>
+                        <div id="client-display"></div> <br />
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+   
+}
+
+@section Scripts {
+    <script type="text/javascript" language="javascript">
+
+        $('#ddlProvider').change(function () {
+            var selectedItem = $("#lbltxt").text($("#ddlProvider option:selected").text());
+            var dropdownItems = $("#ddlProvider").text();
+            return false;
+        });
+
+        $('#ddlClient').change(function () {
+            var selectedItem = $("#lbltxt").text($("#ddlClient option:selected").text());
+            var dropdownItems = $("#ddlClient").text();
+            return false;
+        });
+
+        function ProviderDetails() {
+            var selectedId = $("#ddlProvider").val();
+
+            $.post("/InvoiceHeaders/GetProviderById", { id: selectedId },
+                function (data) {
+                    if (data) {
+                        if (!data.capital) { data.capital = ""; }
+                        if (!data.address) { data.address = ""; }
+                        if (!data.bank) { data.bank = ""; }
+                        if (!data.cif) { data.cif = ""; }
+                        if (!data.iban) { data.iban = ""; }
+                        if (!data.name) { data.name = ""; }
+                        if (!data.regNumber) { data.regNumber = ""; }
+                        if (!data.description) { data.description = ""; }
+                        if (!data.tenant) { data.tenant = ""; }
+                        var dataDisplayElement = '<div class="data-wrapper"> <br/><div><b>Capital:</b> ' + data.capital + '</div><div><b>Address:</b> ' + data.address + '</div><div><b>Bank:</b> ' + data.bank + '</div><div><b>CIF:</b> ' + data.cif + '</div><div><b>IBAN:</b> ' + data.iban + '</div><div><b>Name:</b>' + data.name + '</div><div><b>Register Number:</b>' + data.regNumber + '</div><div><b>Description:</b> ' + data.description + '</div><div><b>Tenant:</b>' + data.tenant + '</div></div >';
+                        document.getElementById('provider-display').innerHTML = dataDisplayElement;
+                    }
+                });
+        }
+
+
+        function ClientDetails() {
+            var selectedId = $("#ddlClient").val();
+        //TO DO: Change data content
+            $.post("/InvoiceHeaders/GetClientById", { id: selectedId },
+                function (data) {
+                    if (data) {
+                        if (!data.capital) { data.capital = ""; }
+                        if (!data.address) { data.address = ""; }
+                        if (!data.bank) { data.bank = ""; }
+                        if (!data.cif) { data.cif = ""; }
+                        if (!data.iban) { data.iban = ""; }
+                        if (!data.name) { data.name = ""; }
+                        if (!data.regNumber) { data.regNumber = ""; }
+                        if (!data.description) { data.description = ""; }
+                        if (!data.tenant) { data.tenant = ""; }
+                        var dataDisplayElement = '<div class="data-wrapper"> <br/><div><b>Capital:</b> ' + data.capital + '</div><div><b>Address:</b> ' + data.address + '</div><div><b>Bank:</b> ' + data.bank + '</div><div><b>CIF:</b> ' + data.cif + '</div><div><b>IBAN:</b> ' + data.iban + '</div><div><b>Name:</b>' + data.name + '</div><div><b>Register Number:</b>' + data.regNumber + '</div><div><b>Description:</b> ' + data.description + '</div><div><b>Tenant:</b>' + data.tenant + '</div></div >';
+                        document.getElementById('client-display').innerHTML = dataDisplayElement;
+                    }
+                });
+        }
+    </script>
+}
+
+
 <table class="table">
     <thead>
         <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Number)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IssueDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.DueDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.InversTaxing)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.VatCollecting)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Description)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Currecy)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.VAT)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Weight)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TotalValue)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TotalVat)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TotalAmount)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Observations)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ClientSoldInfo)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PaymentMethod)
-                </th>
-                @*<th>
-                    @Html.DisplayNameFor(model => model.CsvFile)
-                </th>*@
-            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.Number)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IssueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InversTaxing)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VatCollecting)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Currecy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VAT)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Weight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalValue)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalVat)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Observations)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientSoldInfo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PaymentMethod)
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Number)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IssueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InversTaxing)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VatCollecting)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Currecy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.VAT)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Weight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalValue)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalVat)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Observations)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ClientSoldInfo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PaymentMethod)
-            </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.CsvFile)
-            </td>*@
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IssueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InversTaxing)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VatCollecting)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Currecy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VAT)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Weight)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalValue)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalVat)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Observations)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClientSoldInfo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PaymentMethod)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
