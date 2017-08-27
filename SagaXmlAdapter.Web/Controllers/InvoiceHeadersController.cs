@@ -32,9 +32,6 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders
         public async Task<IActionResult> Index()
         {
-            ViewBag.Provider = GetProviderDetails();
-            ViewBag.Client = GetClientDetails();
-
             return View(await _context.InvoiceHeader.ToListAsync());
         }
 
@@ -105,6 +102,9 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders/Create
         public IActionResult Create()
         {
+            ViewBag.Provider = GetProviderDetails();
+            ViewBag.Client = GetClientDetails();
+
             return View();
         }
 
@@ -113,7 +113,7 @@ namespace SagaXmlAdapter.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod,CsvFile")] InvoiceHeader invoiceHeader)
+        public async Task<IActionResult> Create([Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader)
         {
             if (ModelState.IsValid)
             {
@@ -135,19 +135,6 @@ namespace SagaXmlAdapter.Web.Controllers
 
             var model = await _context.InvoiceHeader.SingleOrDefaultAsync(m => m.Id == id);
 
-            //model.Details = await _context.InvoiceDetail.ToListAsync();
-
-            //if (model != null && model.Details != null)
-            //{
-            //    var getProviders = await _context.Provider.ToListAsync();
-            //    var getClients = await _context.Client.ToListAsync();
-
-            //    foreach (var item in model.Details)
-            //    {
-            //        item.ProviderList = new SelectList(getProviders, "Id", "Value");
-            //        item.ClientList = new SelectList(getClients, "Id", "Value");
-            //    }
-            //}
             if (model == null)
             {
                 return NotFound();
@@ -318,60 +305,62 @@ namespace SagaXmlAdapter.Web.Controllers
 
                     // TO DO: Change tag names in RO
                     xml = new XDocument(new XDeclaration("1.0", "UTF - 8", "yes"),
-                        new XElement("InviceHeaders",
-                           new XElement("InvoiceHeader",
-                               new XElement("Header",
-                               new XElement("CompanyName", invoiceHeader.Provider.Name),
-                               new XElement("CompanyCIF", invoiceHeader.Provider.CIF),
-                               new XElement("CompanyRegNumber", invoiceHeader.Provider.RegNumber),
-                               new XElement("CompanyCapital", invoiceHeader.Provider.Capital),
-                               new XElement("CompanyAddress", invoiceHeader.Provider.Address),
-                               new XElement("CompanyBank", invoiceHeader.Provider.Bank),
-                               new XElement("CompanyIBAN", invoiceHeader.Provider.IBAN),
-                               new XElement("CompanyAdditionalInfo", invoiceHeader.Provider.Description),
+                        new XElement("Facturi",
+                           new XElement("Factura",
+                               new XElement("Antet",
+                               new XElement("FurnizorNume", invoiceHeader.Provider.Name),
+                               new XElement("FurnizorCIF", invoiceHeader.Provider.CIF),
+                               new XElement("FurnizorNrRegCom", invoiceHeader.Provider.RegNumber),
+                               new XElement("FurnizorCapital", invoiceHeader.Provider.Capital),
+                               new XElement("FurnizorAdresa", invoiceHeader.Provider.Address),
+                               new XElement("FurnizorBanca", invoiceHeader.Provider.Bank),
+                               new XElement("FurnizorIBAN", invoiceHeader.Provider.IBAN),
+                               new XElement("FurnizorInformatiiSuplimentare", invoiceHeader.Provider.Description),
 
-                               new XElement("ClientBank", invoiceHeader.Client.Name),
-                               new XElement("ClientDescription", invoiceHeader.Client.Description),
+                               new XElement("ClientNume", invoiceHeader.Client.Name),
+                               new XElement("ClientInformatiiSuplimentare", invoiceHeader.Client.Description),
                                new XElement("ClientCIF", invoiceHeader.Client.CIF),
-                               new XElement("ClientRegNumber", invoiceHeader.Client.RegNumber),
-                               new XElement("ClientAddress", invoiceHeader.Client.Address),
-                               new XElement("ClientBank", invoiceHeader.Client.Bank),
+                               new XElement("ClientNrRegCom", invoiceHeader.Client.RegNumber),
+                               new XElement("ClientAdresa", invoiceHeader.Client.Address),
+                               new XElement("ClientBanca", invoiceHeader.Client.Bank),
                                new XElement("ClientIBAN", invoiceHeader.Client.IBAN),
 
-                               new XElement("InvoiceNumber", invoiceHeader.Number),
-                               new XElement("InvoiceIssueDate", invoiceHeader.IssueDate),
-                               new XElement("InvoiceDueDate", invoiceHeader.DueDate),
-                               new XElement("InvoiceInversTaxing", invoiceHeader.InversTaxing),
-                               new XElement("InvoiceVatCollecting", invoiceHeader.VatCollecting),
-                               new XElement("InvoiceDescription", invoiceHeader.Description),
-                               new XElement("InvoiceCurrency", invoiceHeader.Currecy),
-                               new XElement("InvoiceVAT", invoiceHeader.VAT),
-                               new XElement("InvoiceWeight", invoiceHeader.Weight)),
+                               new XElement("FacturaNumar", invoiceHeader.Number),
+                               new XElement("FacturaData", invoiceHeader.IssueDate),
+                               new XElement("FacturaScadenta", invoiceHeader.DueDate),
+                               new XElement("FacturaTaxareInversa", invoiceHeader.InversTaxing),
+                               new XElement("FacturaTVAIncasare", invoiceHeader.VatCollecting),
+                               new XElement("FacturaInformatiiSuplimentare", invoiceHeader.Description),
+                               new XElement("FacturaMoneda", invoiceHeader.Currecy),
+                               new XElement("FacturaCotaTVA", invoiceHeader.VAT),
+                               new XElement("FacturaGreutate", invoiceHeader.Weight)),
 
-                           new XElement("InvoiceDetails",
+                           new XElement("Detali",
                                from detail in invoiceHeader.Details
-                               select new XElement("InvoiceContent",
-                                      new XElement("No", detail.Number),
-                                      new XElement("ProviderCode", detail.CodeProvider),
-                                      new XElement("ClientCode", detail.CodeClient),
-                                      new XElement("BarCode", detail.BarCode),
-                                      new XElement("AdditionalInformation", detail.AdditionalInfo),
-                                      new XElement("MeasurementUnit", detail.MeasurementUnit),
-                                      new XElement("Quantity", detail.Quantity),
-                                      new XElement("Price", detail.Price),
-                                      new XElement("Value", detail.Value),
-                                      new XElement("VatPercentage", detail.VatPercentage),
-                                      new XElement("VAT", detail.VAT))),
+                               select new XElement("Continut",
+                                      new XElement("Linie",
+                                      new XElement("LinieNrCrt", detail.Number),
+                                     // new XElement("Descriere", detail.)
+                                      new XElement("CodArticolFurnizor", detail.CodeProvider),
+                                      new XElement("CodArticolClient", detail.CodeClient),
+                                      new XElement("CodBare", detail.BarCode),
+                                      new XElement("InformatiiSuplimentare", detail.AdditionalInfo),
+                                      new XElement("UM", detail.MeasurementUnit),
+                                      new XElement("Cantitate", detail.Quantity),
+                                      new XElement("Pret", detail.Price),
+                                      new XElement("Valoare", detail.Value),
+                                      new XElement("ProcTVA", detail.VatPercentage),
+                                      new XElement("TVA", detail.VAT)))),
 
-                           new XElement("Summary",
-                               new XElement("TotalValue", invoiceHeader.TotalValue),
-                               new XElement("TotalVAT", invoiceHeader.VAT),
-                               new XElement("TotalAmount", invoiceHeader.TotalAmount))),
+                           new XElement("Sumar",
+                               new XElement("TotalValoare", invoiceHeader.TotalValue),
+                               new XElement("TotalTVA", invoiceHeader.VAT),
+                               new XElement("Total", invoiceHeader.TotalAmount))),
 
-                           new XElement("Observations",
-                               new XElement("Observations", invoiceHeader.Observations),
-                               new XElement("ClientSold", invoiceHeader.ClientSoldInfo),
-                               new XElement("PaymentMethod", invoiceHeader.PaymentMethod))));
+                           new XElement("Observatii",
+                               new XElement("txtObservatii", invoiceHeader.Observations),
+                               new XElement("SoldClient", invoiceHeader.ClientSoldInfo),
+                               new XElement("ModalitatePlata", invoiceHeader.PaymentMethod))));
                 }
             }
 
