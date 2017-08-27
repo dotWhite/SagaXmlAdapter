@@ -6,11 +6,114 @@
 
 <h2>Create</h2>
 
+
+@section Scripts {
+    <script type="text/javascript" language="javascript">
+
+        $('#ddlProvider').change(function () {
+            var selectedItem = $("#lbltxt").text($("#ddlProvider option:selected").text());
+            var dropdownItems = $("#ddlProvider").text();
+            return false;
+        });
+
+        $('#ddlClient').change(function () {
+            var selectedItem = $("#lbltxt").text($("#ddlClient option:selected").text());
+            var dropdownItems = $("#ddlClient").text();
+            return false;
+        });
+
+        function ProviderDetails() {
+            var selectedId = $("#ddlProvider").val();
+
+            console.log("selectedItem ", selectedId);
+
+            if (selectedId !== "" && selectedId !== 0 && selectedId !== undefined) {
+                $.post("/InvoiceHeaders/GetProviderById", { id: selectedId },
+                    function (data) {
+                        if (data) {
+                            if (!data.capital) { data.capital = ""; }
+                            if (!data.address) { data.address = ""; }
+                            if (!data.bank) { data.bank = ""; }
+                            if (!data.cif) { data.cif = ""; }
+                            if (!data.iban) { data.iban = ""; }
+                            if (!data.name) { data.name = ""; }
+                            if (!data.regNumber) { data.regNumber = ""; }
+                            if (!data.description) { data.description = ""; }
+                            if (!data.tenant) { data.tenant = ""; }
+                            var dataDisplayElement = '<div class="data-wrapper"> <br/><div><b>Capital:</b> ' + data.capital + '</div><div><b>Address:</b> ' + data.address + '</div><div><b>Bank:</b> ' + data.bank + '</div><div><b>CIF:</b> ' + data.cif + '</div><div><b>IBAN:</b> ' + data.iban + '</div><div><b>Name:</b>' + data.name + '</div><div><b>Register Number:</b>' + data.regNumber + '</div><div><b>Description:</b> ' + data.description + '</div><div><b>Tenant:</b>' + data.tenant + '</div></div >';
+                            document.getElementById('provider-display').innerHTML = dataDisplayElement;
+                        }
+                    });
+            }
+        }
+
+
+        function ClientDetails() {
+            var selectedId = $("#ddlClient").val();
+
+            if (selectedId !== "" && selectedId !== 0 && selectedId !== undefined) {
+                $.post("/InvoiceHeaders/GetClientById", { id: selectedId },
+                    function (data) {
+                        if (data) {
+                            if (!data.address) { data.address = ""; }
+                            if (!data.bank) { data.bank = ""; }
+                            if (!data.cif) { data.cif = ""; }
+                            if (!data.iban) { data.iban = ""; }
+                            if (!data.name) { data.name = ""; }
+                            if (!data.regNumber) { data.regNumber = ""; }
+                            if (!data.description) { data.description = ""; }
+                            if (!data.tenant) { data.tenant = ""; }
+                            var dataDisplayElement = '<div class="data-wrapper"> <br/></div><div><b>Address:</b> ' + data.address + '</div><div><b>Bank:</b> ' + data.bank + '</div><div><b>CIF:</b> ' + data.cif + '</div><div><b>IBAN:</b> ' + data.iban + '</div><div><b>Name:</b>' + data.name + '</div><div><b>Register Number:</b>' + data.regNumber + '</div><div><b>Description:</b> ' + data.description + '</div><div><b>Tenant:</b>' + data.tenant + '</div></div >';
+                            document.getElementById('client-display').innerHTML = dataDisplayElement;
+                        }
+                    });
+            }
+        }
+
+       @*@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}*@
+
+    </script>
+}
 <form asp-action="Create" enctype="multipart/form-data">
     <div class="form-horizontal">
         <h4>InvoiceHeader</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        
+        @using (Html.BeginForm())
+        {
+            <div>
+                <div>
+                    <ul>
+                        <li>
+                            <div>
+                                @Html.Label("Provider*")
+                                <div>
+                                    @Html.DropDownList("ddlProvider", new SelectList(ViewBag.Provider, "Value", "Text"), "Please select a Provider")
+                                    <button type="submit" value="See Provider Details" onclick="javascript: ProviderDetails(); return false;" class="btn btn-default">See Provider Details</button>
+                                </div>
+                                <div id="provider-display"></div> <br />
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <ul>
+                        <li>
+                            <div>
+                                @Html.Label("Client*")
+                                <div>
+                                    @Html.DropDownList("ddlClient", new SelectList(ViewBag.Client, "Value", "Text"), "Please select a Client")
+                                    <button type="submit" value="See Client Details" onclick="javascript: ClientDetails(); return false;" class="btn btn-default">See Client Details</button>
+                                </div>
+                                <div id="client-display"></div> <br />
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+
         <div class="form-group">
             <label asp-for="Number" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -118,13 +221,7 @@
                 <span asp-validation-for="PaymentMethod" class="text-danger"></span>
             </div>
         </div>
-        <div class="form-group">
-            @*<label asp-for="CsvFile" class="col-md-2 control-label">Upload File</label>*@
-            <div class="col-md-10">
-                <input type="file" class="btn-file"  />
-                <a asp-action="UploadFile">Upload File</a> 
-            </div>
-        </div>
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
@@ -136,7 +233,3 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

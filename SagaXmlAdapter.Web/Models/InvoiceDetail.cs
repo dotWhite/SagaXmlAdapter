@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace SagaXmlAdapter.Web.Models
 {
@@ -20,7 +21,7 @@ namespace SagaXmlAdapter.Web.Models
         public string Observations { get; set; }
 
         public virtual FileDetail FileDetail { get; set; }
-        public SelectList ProviderList { get; set; }
-        public SelectList ClientList { get; set; }
+        public List<SelectListItem> ProviderList { get; set; }
+        public List<SelectListItem> ClientList { get; set; }
     }
 }

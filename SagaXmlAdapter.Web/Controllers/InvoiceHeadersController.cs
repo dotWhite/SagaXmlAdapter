@@ -105,6 +105,25 @@ namespace SagaXmlAdapter.Web.Controllers
             ViewBag.Provider = GetProviderDetails();
             ViewBag.Client = GetClientDetails();
 
+            //var GETproviderList = _context.Provider.ToList();
+            //var GETclientList = _context.Client.ToList();
+
+
+            //var model = _context.InvoiceHeader;
+
+            //foreach(var item in model)
+            //{              
+            //    foreach (var provider in GETproviderList)
+            //    {
+            //        item.Provider = provider;
+            //    }
+
+            //    foreach (var client in GETclientList)
+            //    {
+            //        item.Client = client;
+            //    }
+            //}
+            
             return View();
         }
 
@@ -113,8 +132,25 @@ namespace SagaXmlAdapter.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader)
+        public async Task<IActionResult> Create([Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader, string ddlProvider, string ddlClient)
         {
+            int selectedProviderId = 0;
+            int selectedClientId = 0;
+            var selectedProvider = new Provider();
+            var selectedClient = new Client();
+
+            if (int.TryParse(ddlProvider, out selectedProviderId))
+            {
+                selectedProvider = GetProviderById(selectedProviderId);
+            }
+            if(int.TryParse(ddlClient, out selectedClientId))
+            {
+                selectedClient = GetClientById(selectedClientId);
+            }
+
+            invoiceHeader.Client = selectedClient;
+            invoiceHeader.Provider = selectedProvider;
+ 
             if (ModelState.IsValid)
             {
                 _context.Add(invoiceHeader);
