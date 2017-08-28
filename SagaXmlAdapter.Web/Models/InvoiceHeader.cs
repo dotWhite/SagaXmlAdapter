@@ -36,5 +36,7 @@ namespace SagaXmlAdapter.Web.Models
         public string Observations { get; set; }
         public string ClientSoldInfo { get; set; }
         public string PaymentMethod { get; set; }
+
+        public bool showInvoiceDetails { get; set; }
     }
 }

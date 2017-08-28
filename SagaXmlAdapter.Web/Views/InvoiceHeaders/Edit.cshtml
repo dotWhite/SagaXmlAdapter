@@ -6,30 +6,6 @@
 
 <h2>Edit</h2>
 
-
-    @*<form>
-
-        @*<div class="form-group">
-            <label asp-for="@Model.Details.First().CodeProvider" class="col-md-2 control-label">Provider</label>
-            <div class="col-md-10">
-                <select onchange="redirect(this.value)" asp-for="@Model.Details.First().CodeProvider" asp-items="@Model.Details.First().ProviderList">
-                    <option label="Please Select a Provider" selected="tata"></option>
-                </select>
-                <input type="submit" value="See details"/>
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.DropDownListFor(m => m.Details.First().SelectedProvider, Model.Details.First().ProviderList, "-Please select-")
-        </div>
-        <div class="form-group">
-            <label asp-for="@Model.Details.First().CodeClient" class="col-md-2 control-label">Client</label>
-            <div class="col-md-10">
-                <select asp-for="@Model.Details.First().CodeClient" asp-items="@Model.Details.First().ClientList"></select>
-            </div>
-        </div>
-    <input type="submit" value="See details" />
-</form>*@
-
 <form asp-action="Edit">
     <div class="form-horizontal">
         <h4>InvoiceHeader</h4>
@@ -143,14 +119,19 @@
                 <span asp-validation-for="PaymentMethod" class="text-danger"></span>
             </div>
         </div>
-        &nbsp;
+        <div class="form-group">
+            <label asp-for="Details.First().FileDetail.FileName" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Details.First().FileDetail.FileName" class="form-control" />
+                <span asp-validation-for="Details.First().FileDetail.FileName" class="text-danger"></span>
+            </div>
+        </div>
 
-        @{ await Html.RenderPartialAsync("_CsvTable", Model.Details); }
+        @*@{ await Html.RenderPartialAsync("_CsvTable", Model.Details); }*@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
-                <input type="submit" value="Export to XML" class="btn btn-default" asp-action="ExportToXML" />
             </div>
         </div>
     </div>

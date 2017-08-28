@@ -32,7 +32,17 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.InvoiceHeader.ToListAsync());
+            var invoiceDetails = _context.InvoiceDetail.ToList();
+            var model = await _context.InvoiceHeader.ToListAsync();
+            foreach(var item in model)
+            {
+                item.Details = invoiceDetails;
+                foreach(var detail in item.Details)
+                {
+                  //  detail.FileDetail = fileDetails;
+                }
+            }
+            return View(model);
         }
 
         public Provider GetProviderById(int id)
@@ -105,26 +115,12 @@ namespace SagaXmlAdapter.Web.Controllers
             ViewBag.Provider = GetProviderDetails();
             ViewBag.Client = GetClientDetails();
 
-            //var GETproviderList = _context.Provider.ToList();
-            //var GETclientList = _context.Client.ToList();
+            var invoiceHeader = new InvoiceHeader();
+            var invoiceDetails = _context.InvoiceDetail.ToList();
+            invoiceHeader.Details = invoiceDetails;
+            invoiceHeader.showInvoiceDetails = false;
 
-
-            //var model = _context.InvoiceHeader;
-
-            //foreach(var item in model)
-            //{              
-            //    foreach (var provider in GETproviderList)
-            //    {
-            //        item.Provider = provider;
-            //    }
-
-            //    foreach (var client in GETclientList)
-            //    {
-            //        item.Client = client;
-            //    }
-            //}
-            
-            return View();
+            return View(invoiceHeader);
         }
 
         // POST: InvoiceHeaders/Create
@@ -132,8 +128,11 @@ namespace SagaXmlAdapter.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader, string ddlProvider, string ddlClient)
+        public async Task<IActionResult> Create([Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader, List<IFormFile> files, string ddlProvider, string ddlClient)
         {
+            ViewBag.Provider = GetProviderDetails();
+            ViewBag.Client = GetClientDetails(); 
+
             int selectedProviderId = 0;
             int selectedClientId = 0;
             var selectedProvider = new Provider();
@@ -150,13 +149,46 @@ namespace SagaXmlAdapter.Web.Controllers
 
             invoiceHeader.Client = selectedClient;
             invoiceHeader.Provider = selectedProvider;
- 
+
             if (ModelState.IsValid)
             {
-                _context.Add(invoiceHeader);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
+                /////////////////////////////////////
+                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
+
+                var fileDetail = new FileDetail();
+
+                foreach (var formFile in files)
+                {
+                    if (formFile.Length > 0)
+                    {
+                        var fileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
+
+                        using (var inputStream = new StreamReader(formFile.OpenReadStream()))
+                        {
+                            var items = await inputStream.ReadToEndAsync();
+
+                            fileDetail.FileName = fileName;
+                            fileDetail.FileType = formFile.ContentType;
+                            fileDetail.Length = Convert.ToInt32(formFile.Length);
+                            fileDetail.Content = ConvertCSVtoList(items);
+                        }
+                    }
+
+                    _context.FileDetail.Add(fileDetail);
+                    invoiceHeader.Details = _context.InvoiceDetail.ToList();
+                    invoiceHeader.showInvoiceDetails = true;
+                    foreach (var detail in invoiceHeader.Details)
+                    {
+                        detail.FileDetail = fileDetail;
+                    }
+                    ///////////////////////////////////////
+                }
+                
+                    _context.Add(invoiceHeader);
+                    await _context.SaveChangesAsync();
+                //return RedirectToAction("Index");
+                return View("Create", invoiceHeader);
+                }
 
             return View(invoiceHeader);
         }
@@ -248,36 +280,35 @@ namespace SagaXmlAdapter.Web.Controllers
             return _context.InvoiceHeader.Any(e => e.Id == id);
         }
 
-        [HttpPost]
-        // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadFile(List<IFormFile> files, [Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader)
-        {
-            var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
+        //[HttpPost]
+        //// [ValidateAntiForgeryToken]
+        //public async Task<IActionResult> UploadFile(List<IFormFile> files)
+        //{
+        //    var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
 
-            var fileDetail = new FileDetail();
+        //    var fileDetail = new FileDetail();
 
-            foreach (var formFile in files)
-            {
-                if (formFile.Length > 0)
-                {
-                    var fileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
+        //    foreach (var formFile in files)
+        //    {
+        //        if (formFile.Length > 0)
+        //        {
+        //            var fileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
 
-                    using (var inputStream = new StreamReader(formFile.OpenReadStream()))
-                    {
-                        var items = await inputStream.ReadToEndAsync();
+        //            using (var inputStream = new StreamReader(formFile.OpenReadStream()))
+        //            {
+        //                var items = await inputStream.ReadToEndAsync();
 
-                        fileDetail.FileName = fileName;
-                        fileDetail.FileType = formFile.ContentType;
-                        fileDetail.Length = Convert.ToInt32(formFile.Length);
-                        fileDetail.Content = ConvertCSVtoList(items);
-                    }
-                }
+        //                fileDetail.FileName = fileName;
+        //                fileDetail.FileType = formFile.ContentType;
+        //                fileDetail.Length = Convert.ToInt32(formFile.Length);
+        //                fileDetail.Content = ConvertCSVtoList(items);
+        //            }
+        //        }
 
-                _context.FileDetail.Add(fileDetail);
-                await _context.SaveChangesAsync();
-            }
-            return View(invoiceHeader.Details);
-        }
+        //        _context.FileDetail.Add(fileDetail);
+        //        await _context.SaveChangesAsync();
+        //    }
+        //}
 
         private List<InvoiceDetail> ConvertCSVtoList(string stream)
         {
