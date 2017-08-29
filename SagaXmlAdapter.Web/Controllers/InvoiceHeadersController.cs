@@ -34,13 +34,10 @@ namespace SagaXmlAdapter.Web.Controllers
         {
             var invoiceDetails = _context.InvoiceDetail.ToList();
             var model = await _context.InvoiceHeader.ToListAsync();
-            foreach(var item in model)
+          
+            foreach (var item in model)
             {
                 item.Details = invoiceDetails;
-                foreach(var detail in item.Details)
-                {
-                  //  detail.FileDetail = fileDetails;
-                }
             }
             return View(model);
         }
@@ -69,7 +66,7 @@ namespace SagaXmlAdapter.Web.Controllers
                     Text = provider.Name,
                     Value = provider.Id.ToString(),
                 });
-            }                 
+            }
             return selectList;
         }
 
@@ -130,29 +127,32 @@ namespace SagaXmlAdapter.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader, List<IFormFile> files, string ddlProvider, string ddlClient)
         {
-            ViewBag.Provider = GetProviderDetails();
-            ViewBag.Client = GetClientDetails(); 
-
-            int selectedProviderId = 0;
-            int selectedClientId = 0;
-            var selectedProvider = new Provider();
-            var selectedClient = new Client();
-
-            if (int.TryParse(ddlProvider, out selectedProviderId))
-            {
-                selectedProvider = GetProviderById(selectedProviderId);
-            }
-            if(int.TryParse(ddlClient, out selectedClientId))
-            {
-                selectedClient = GetClientById(selectedClientId);
-            }
-
-            invoiceHeader.Client = selectedClient;
-            invoiceHeader.Provider = selectedProvider;
-
             if (ModelState.IsValid)
             {
-                /////////////////////////////////////
+                // Populate dropdown contents
+                ViewBag.Provider = GetProviderDetails();
+                ViewBag.Client = GetClientDetails();
+
+                int selectedProviderId = 0;
+                int selectedClientId = 0;
+                var selectedProvider = new Provider();
+                var selectedClient = new Client();
+
+                // Get selected items
+                if (int.TryParse(ddlProvider, out selectedProviderId))
+                {
+                    selectedProvider = GetProviderById(selectedProviderId);
+                }
+                if (int.TryParse(ddlClient, out selectedClientId))
+                {
+                    selectedClient = GetClientById(selectedClientId);
+                }
+
+                invoiceHeader.Client = selectedClient;
+                invoiceHeader.Provider = selectedProvider;
+                invoiceHeader.showInvoiceDetails = true;
+
+                // Start processing uploaded file
                 var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
 
                 var fileDetail = new FileDetail();
@@ -174,21 +174,17 @@ namespace SagaXmlAdapter.Web.Controllers
                         }
                     }
 
+                    // Save uploaded file
                     _context.FileDetail.Add(fileDetail);
-                    invoiceHeader.Details = _context.InvoiceDetail.ToList();
-                    invoiceHeader.showInvoiceDetails = true;
-                    foreach (var detail in invoiceHeader.Details)
-                    {
-                        detail.FileDetail = fileDetail;
-                    }
-                    ///////////////////////////////////////
-                }
-                
+                    invoiceHeader.FileDetail = fileDetail;
+                    invoiceHeader.Details = fileDetail.Content;
+
                     _context.Add(invoiceHeader);
                     await _context.SaveChangesAsync();
-                //return RedirectToAction("Index");
-                return View("Create", invoiceHeader);
                 }
+  
+                return View("Create", invoiceHeader);
+            }
 
             return View(invoiceHeader);
         }
@@ -201,6 +197,7 @@ namespace SagaXmlAdapter.Web.Controllers
                 return NotFound();
             }
 
+            //var file = await _context.FileDetail.SingleOrDefaultAsync(y => y.Id == id);
             var model = await _context.InvoiceHeader.SingleOrDefaultAsync(m => m.Id == id);
 
             if (model == null)
@@ -280,36 +277,6 @@ namespace SagaXmlAdapter.Web.Controllers
             return _context.InvoiceHeader.Any(e => e.Id == id);
         }
 
-        //[HttpPost]
-        //// [ValidateAntiForgeryToken]
-        //public async Task<IActionResult> UploadFile(List<IFormFile> files)
-        //{
-        //    var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
-
-        //    var fileDetail = new FileDetail();
-
-        //    foreach (var formFile in files)
-        //    {
-        //        if (formFile.Length > 0)
-        //        {
-        //            var fileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
-
-        //            using (var inputStream = new StreamReader(formFile.OpenReadStream()))
-        //            {
-        //                var items = await inputStream.ReadToEndAsync();
-
-        //                fileDetail.FileName = fileName;
-        //                fileDetail.FileType = formFile.ContentType;
-        //                fileDetail.Length = Convert.ToInt32(formFile.Length);
-        //                fileDetail.Content = ConvertCSVtoList(items);
-        //            }
-        //        }
-
-        //        _context.FileDetail.Add(fileDetail);
-        //        await _context.SaveChangesAsync();
-        //    }
-        //}
-
         private List<InvoiceDetail> ConvertCSVtoList(string stream)
         {
             var invoices = new List<InvoiceDetail>();
@@ -338,9 +305,11 @@ namespace SagaXmlAdapter.Web.Controllers
             return invoices;
         }
 
-        public FileContentResult ExportToXML()
+        [HttpPost]
+        public FileContentResult ExportToXML(FileDetail invoice, string ddlProvider, string ddlClient)
         {
-            var xml = ProcessListToXML();
+            var aa = invoice;
+            var xml = ProcessListToXML(ddlProvider, ddlClient);
 
             XDocument doc = XDocument.Parse(xml);
             var contentType = "application/xml";
@@ -352,83 +321,89 @@ namespace SagaXmlAdapter.Web.Controllers
             return result;
         }
 
-        private string ProcessListToXML()
+        private string ProcessListToXML(string sprovider, string sclient)
         {
             var xml = new XDocument();
 
             var invoiceHeaderList = _context.InvoiceHeader.ToList();
-            foreach(var invoiceHeader in invoiceHeaderList)
+            foreach (var invoiceHeader in invoiceHeaderList)
             {
-                invoiceHeader.Details = _context.InvoiceDetail.ToList();
-                var clientList = _context.Client.ToList();
-                foreach(var client in clientList)
+                int selectedProviderId = 0;
+                int selectedClientId = 0;
+                var selectedProvider = new Provider();
+                var selectedClient = new Client();
+
+                // Get selected items
+                if (int.TryParse(sprovider, out selectedProviderId))
                 {
-                    invoiceHeader.Client = client;
+                    selectedProvider = GetProviderById(selectedProviderId);
                 }
-                var providerList = _context.Provider.ToList();
-                foreach(var provider in providerList)
+                if (int.TryParse(sclient, out selectedClientId))
                 {
-                    invoiceHeader.Provider = provider;
-
-                    // TO DO: Change tag names in RO
-                    xml = new XDocument(new XDeclaration("1.0", "UTF - 8", "yes"),
-                        new XElement("Facturi",
-                           new XElement("Factura",
-                               new XElement("Antet",
-                               new XElement("FurnizorNume", invoiceHeader.Provider.Name),
-                               new XElement("FurnizorCIF", invoiceHeader.Provider.CIF),
-                               new XElement("FurnizorNrRegCom", invoiceHeader.Provider.RegNumber),
-                               new XElement("FurnizorCapital", invoiceHeader.Provider.Capital),
-                               new XElement("FurnizorAdresa", invoiceHeader.Provider.Address),
-                               new XElement("FurnizorBanca", invoiceHeader.Provider.Bank),
-                               new XElement("FurnizorIBAN", invoiceHeader.Provider.IBAN),
-                               new XElement("FurnizorInformatiiSuplimentare", invoiceHeader.Provider.Description),
-
-                               new XElement("ClientNume", invoiceHeader.Client.Name),
-                               new XElement("ClientInformatiiSuplimentare", invoiceHeader.Client.Description),
-                               new XElement("ClientCIF", invoiceHeader.Client.CIF),
-                               new XElement("ClientNrRegCom", invoiceHeader.Client.RegNumber),
-                               new XElement("ClientAdresa", invoiceHeader.Client.Address),
-                               new XElement("ClientBanca", invoiceHeader.Client.Bank),
-                               new XElement("ClientIBAN", invoiceHeader.Client.IBAN),
-
-                               new XElement("FacturaNumar", invoiceHeader.Number),
-                               new XElement("FacturaData", invoiceHeader.IssueDate),
-                               new XElement("FacturaScadenta", invoiceHeader.DueDate),
-                               new XElement("FacturaTaxareInversa", invoiceHeader.InversTaxing),
-                               new XElement("FacturaTVAIncasare", invoiceHeader.VatCollecting),
-                               new XElement("FacturaInformatiiSuplimentare", invoiceHeader.Description),
-                               new XElement("FacturaMoneda", invoiceHeader.Currecy),
-                               new XElement("FacturaCotaTVA", invoiceHeader.VAT),
-                               new XElement("FacturaGreutate", invoiceHeader.Weight)),
-
-                           new XElement("Detali",
-                               from detail in invoiceHeader.Details
-                               select new XElement("Continut",
-                                      new XElement("Linie",
-                                      new XElement("LinieNrCrt", detail.Number),
-                                     // new XElement("Descriere", detail.)
-                                      new XElement("CodArticolFurnizor", detail.CodeProvider),
-                                      new XElement("CodArticolClient", detail.CodeClient),
-                                      new XElement("CodBare", detail.BarCode),
-                                      new XElement("InformatiiSuplimentare", detail.AdditionalInfo),
-                                      new XElement("UM", detail.MeasurementUnit),
-                                      new XElement("Cantitate", detail.Quantity),
-                                      new XElement("Pret", detail.Price),
-                                      new XElement("Valoare", detail.Value),
-                                      new XElement("ProcTVA", detail.VatPercentage),
-                                      new XElement("TVA", detail.VAT)))),
-
-                           new XElement("Sumar",
-                               new XElement("TotalValoare", invoiceHeader.TotalValue),
-                               new XElement("TotalTVA", invoiceHeader.VAT),
-                               new XElement("Total", invoiceHeader.TotalAmount))),
-
-                           new XElement("Observatii",
-                               new XElement("txtObservatii", invoiceHeader.Observations),
-                               new XElement("SoldClient", invoiceHeader.ClientSoldInfo),
-                               new XElement("ModalitatePlata", invoiceHeader.PaymentMethod))));
+                    selectedClient = GetClientById(selectedClientId);
                 }
+
+                invoiceHeader.Client = selectedClient;
+                invoiceHeader.Provider = selectedProvider;
+               // invoiceHeader.Details = file.Content;
+
+                xml = new XDocument(new XDeclaration("1.0", "UTF - 8", "yes"),
+                    new XElement("Facturi",
+                        new XElement("Factura",
+                            new XElement("Antet",
+                            new XElement("FurnizorNume", invoiceHeader.Provider.Name),
+                            new XElement("FurnizorCIF", invoiceHeader.Provider.CIF),
+                            new XElement("FurnizorNrRegCom", invoiceHeader.Provider.RegNumber),
+                            new XElement("FurnizorCapital", invoiceHeader.Provider.Capital),
+                            new XElement("FurnizorAdresa", invoiceHeader.Provider.Address),
+                            new XElement("FurnizorBanca", invoiceHeader.Provider.Bank),
+                            new XElement("FurnizorIBAN", invoiceHeader.Provider.IBAN),
+                            new XElement("FurnizorInformatiiSuplimentare", invoiceHeader.Provider.Description),
+
+                            new XElement("ClientNume", invoiceHeader.Client.Name),
+                            new XElement("ClientInformatiiSuplimentare", invoiceHeader.Client.Description),
+                            new XElement("ClientCIF", invoiceHeader.Client.CIF),
+                            new XElement("ClientNrRegCom", invoiceHeader.Client.RegNumber),
+                            new XElement("ClientAdresa", invoiceHeader.Client.Address),
+                            new XElement("ClientBanca", invoiceHeader.Client.Bank),
+                            new XElement("ClientIBAN", invoiceHeader.Client.IBAN),
+
+                            new XElement("FacturaNumar", invoiceHeader.Number),
+                            new XElement("FacturaData", invoiceHeader.IssueDate),
+                            new XElement("FacturaScadenta", invoiceHeader.DueDate),
+                            new XElement("FacturaTaxareInversa", invoiceHeader.InversTaxing),
+                            new XElement("FacturaTVAIncasare", invoiceHeader.VatCollecting),
+                            new XElement("FacturaInformatiiSuplimentare", invoiceHeader.Description),
+                            new XElement("FacturaMoneda", invoiceHeader.Currecy),
+                            new XElement("FacturaCotaTVA", invoiceHeader.VAT),
+                            new XElement("FacturaGreutate", invoiceHeader.Weight)),
+
+                        new XElement("Detali",
+                            from detail in invoiceHeader.Details
+                            select new XElement("Continut",
+                                    new XElement("Linie",
+                                    new XElement("LinieNrCrt", detail.Number),
+                                    // new XElement("Descriere", detail.)
+                                    new XElement("CodArticolFurnizor", detail.CodeProvider),
+                                    new XElement("CodArticolClient", detail.CodeClient),
+                                    new XElement("CodBare", detail.BarCode),
+                                    new XElement("InformatiiSuplimentare", detail.AdditionalInfo),
+                                    new XElement("UM", detail.MeasurementUnit),
+                                    new XElement("Cantitate", detail.Quantity),
+                                    new XElement("Pret", detail.Price),
+                                    new XElement("Valoare", detail.Value),
+                                    new XElement("ProcTVA", detail.VatPercentage),
+                                    new XElement("TVA", detail.VAT)))),
+
+                        new XElement("Sumar",
+                            new XElement("TotalValoare", invoiceHeader.TotalValue),
+                            new XElement("TotalTVA", invoiceHeader.VAT),
+                            new XElement("Total", invoiceHeader.TotalAmount))),
+
+                        new XElement("Observatii",
+                            new XElement("txtObservatii", invoiceHeader.Observations),
+                            new XElement("SoldClient", invoiceHeader.ClientSoldInfo),
+                            new XElement("ModalitatePlata", invoiceHeader.PaymentMethod))));
             }
 
             return xml.ToString();

@@ -120,14 +120,11 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="Details.First().FileDetail.FileName" class="col-md-2 control-label"></label>
+            <label asp-for="FileDetail" class="col-md-2 control-label">Uploaded file:</label>
             <div class="col-md-10">
-                <input asp-for="Details.First().FileDetail.FileName" class="form-control" />
-                <span asp-validation-for="Details.First().FileDetail.FileName" class="text-danger"></span>
+                <input type="file" name="files" asp-for="FileDetail" multiple />
             </div>
         </div>
-
-        @*@{ await Html.RenderPartialAsync("_CsvTable", Model.Details); }*@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
@@ -136,24 +133,11 @@
         </div>
     </div>
 </form>
-@*<form method="post" runat="server" enctype="multipart/form-data" asp-controller="InvoiceHeaders" asp-action="UploadFile">
-    <div class="form-group">
-        <div class="col-md-10">
-            <p>Upload one or more files:</p>
-            <input type="file" name="files" multiple />
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-10">
-            <input type="submit" value="UploadFile" />
-        </div>
-    </div>
-</form>*@	
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
-@*@section Scripts {
+@section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}*@
+}

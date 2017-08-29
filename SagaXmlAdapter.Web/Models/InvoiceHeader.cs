@@ -12,11 +12,6 @@ namespace SagaXmlAdapter.Web.Models
     public class InvoiceHeader
     {
         public int Id { get; set; }
-        public virtual Tenant Tenant { get; set; }
-
-        public virtual Provider Provider { get; set; }
-        public virtual Client Client { get; set; }
-
         public string Number { get; set; }
         public DateTime IssueDate { get; set; }
         public DateTime DueDate { get; set; }
@@ -26,6 +21,11 @@ namespace SagaXmlAdapter.Web.Models
         public string Currecy { get; set; }
         public decimal VAT { get; set; }
         public decimal Weight { get; set; }
+
+        public virtual Tenant Tenant { get; set; }
+        public virtual Provider Provider { get; set; }
+        public virtual Client Client { get; set; }
+        public virtual FileDetail FileDetail { get; set; }
 
         public ICollection<InvoiceDetail> Details { get; set; }
 
@@ -38,5 +38,6 @@ namespace SagaXmlAdapter.Web.Models
         public string PaymentMethod { get; set; }
 
         public bool showInvoiceDetails { get; set; }
+
     }
 }

@@ -20,7 +20,6 @@ namespace SagaXmlAdapter.Web.Models
         public decimal VAT { get; set; }
         public string Observations { get; set; }
 
-        public virtual FileDetail FileDetail { get; set; }
         public List<SelectListItem> ProviderList { get; set; }
         public List<SelectListItem> ClientList { get; set; }
     }

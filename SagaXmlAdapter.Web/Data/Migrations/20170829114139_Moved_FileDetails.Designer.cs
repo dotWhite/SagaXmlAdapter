@@ -8,9 +8,10 @@ using SagaXmlAdapter.Web.Data;
 namespace SagaXmlAdapter.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170829114139_Moved_FileDetails")]
+    partial class Moved_FileDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
