@@ -11,7 +11,7 @@
         <h4>InvoiceHeader</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        
+
         @using (Html.BeginForm())
         {
             <div>
@@ -153,34 +153,46 @@
                 <span asp-validation-for="PaymentMethod" class="text-danger"></span>
             </div>
         </div>
-        <div class="form-group">
+        @if (Model.showInvoiceDetails && Model.FileDetail != null)
+            {
+            <div class="form-group">
+                <label asp-for="FileDetail" class="col-md-2 control-label">Uploaded file</label>
+                <div class="col-md-10">
+                    <span>@Model.FileDetail.FileName</span>
+                </div>
+            </div><br />
+        }
+        else
+        {
+            <div class="form-group">
                 <label asp-for="FileDetail" class="col-md-2 control-label">Upload file:</label>
                 <div class="col-md-10">
-                    <input type="file" name="files" asp-for="FileDetail" multiple />
+                    <input type="file" id="FileUpload" name="files" asp-for="FileDetail" multiple />
                 </div>
-        </div>
+            </div><br />
+        }
+
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>  
-           
             @{ if (Model.showInvoiceDetails)
                 {
                     <div id="showInvoice">
-                        @{await Html.RenderPartialAsync("_CsvTable", Model.Details);}  
+                        @{await Html.RenderPartialAsync("_CsvTable", Model.Details);}
+                        <div style="float:right">
+
+                            <input type="submit" value="Export" asp-action="ExportToXML" asp-controller="InvoiceHeaders" />
+                        </div>
                     </div>
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Save" class="btn btn-default" />
-                    </div>
-                    <input type="submit" value="Export" asp-action="ExportToXML" class="btn btn-default" />
-               }
+                }
             }
         </div>
+
+
     </div>
 </form>
 
 <div>
+
     <a asp-action="Index">Back to List</a>
 </div>
 
@@ -222,7 +234,6 @@
             }
         }
 
-
         function ClientDetails() {
             var selectedId = $("#ddlClient").val();
 
@@ -244,22 +255,6 @@
                     });
             }
         }
-
-        @*function ExportToXML() {
-            $.post("/InvoiceHeaders/ExportToXML", { files: @Model.FileDetail });
-
-        }*@
-
-        //var div = document.getElementById("showInvoice");
-        //function hideCvsTable() {
-        //    if (div.style.display !== "none")
-        //        div.style.display = "none";
-        //}
-
-        //function showCsvTable() {
-        //    div.style.display = "block";
-        //}
-   
 
         @*@{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}*@
 
