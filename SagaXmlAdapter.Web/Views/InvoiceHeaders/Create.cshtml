@@ -158,7 +158,7 @@
             <div class="form-group">
                 <label asp-for="FileDetail" class="col-md-2 control-label">Uploaded file</label>
                 <div class="col-md-10">
-                    <span>@Model.FileDetail.FileName</span>
+                   <span>@Model.FileDetail.FileName</span> 
                 </div>
             </div><br />
         }
@@ -179,12 +179,15 @@
                     <div id="showInvoice">
                         @{await Html.RenderPartialAsync("_CsvTable", Model.Details);}
                         <div style="float:right">
-
-                            <input type="submit" value="Export" asp-action="ExportToXML" asp-controller="InvoiceHeaders" />
+                         
+                            <input type="submit" value="Export" asp-action="ExportToXML" asp-controller="InvoiceHeaders"/>
                         </div>
                     </div>
-                }
+                  }
             }
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
         </div>
 
 
@@ -255,6 +258,8 @@
                     });
             }
         }
+
+        
 
         @*@{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}*@
 
