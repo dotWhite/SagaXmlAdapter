@@ -30,14 +30,7 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders
         public async Task<IActionResult> Index()
         {
-            var model = await _context.InvoiceHeader.ToListAsync();
-            //var file = _context.FileDetail;
-
-            //foreach (var item in model)
-            //{
-            //    item.FileDetail = file;
-            //}
-            return View(model);
+            return View(await _context.InvoiceHeader.ToListAsync());
         }
 
         public Provider GetProviderById(int id)
@@ -95,7 +88,7 @@ namespace SagaXmlAdapter.Web.Controllers
             }
 
             var invoiceHeader = await _context.InvoiceHeader.SingleOrDefaultAsync(m => m.Id == id);
-            var file = await _context.FileDetail .SingleOrDefaultAsync(m => m.Id == invoiceHeader.FileDetailId);
+            var file = await _context.FileDetail.SingleOrDefaultAsync(m => m.Id == invoiceHeader.FileDetailId);
             var details = await _context.InvoiceDetail.Where(x => x.FileDetailId == file.Id).ToListAsync();
             var client = await _context.Client.SingleOrDefaultAsync(c => c.Id == invoiceHeader.ClientId);
             var provider = await _context.Provider.SingleOrDefaultAsync(p => p.Id == invoiceHeader.ProviderId);
@@ -111,6 +104,42 @@ namespace SagaXmlAdapter.Web.Controllers
                 return NotFound();
             }
 
+            return View(invoiceHeader);
+        }
+
+
+        // POST: InvoiceHeaders/Details
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Details(int id, [Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader)
+        {
+            if (id != invoiceHeader.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                { 
+                    _context.Update(invoiceHeader);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!InvoiceHeaderExists(invoiceHeader.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("Index");
+            }
             return View(invoiceHeader);
         }
 
@@ -160,36 +189,12 @@ namespace SagaXmlAdapter.Web.Controllers
                 invoiceHeader.Provider = selectedProvider;
                 invoiceHeader.showInvoiceDetails = true;
 
-                // Start processing uploaded file
-                var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
+                var fileUploaded = UploadFiles(files);
+                invoiceHeader.FileDetail = fileUploaded;
+                invoiceHeader.Details = fileUploaded.Content;
 
-                var fileDetail = new FileDetail();
-
-                foreach (var formFile in files)
-                {
-                    if (formFile.Length > 0)
-                    {
-                        var fileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
-
-                        using (var inputStream = new StreamReader(formFile.OpenReadStream()))
-                        {
-                            var items = await inputStream.ReadToEndAsync();
-
-                            fileDetail.FileName = fileName;
-                            fileDetail.FileType = formFile.ContentType;
-                            fileDetail.Length = Convert.ToInt32(formFile.Length);
-                            fileDetail.Content = ConvertCSVtoList(items);
-                        }
-                    }
-
-                    // Save uploaded file
-                    _context.FileDetail.Add(fileDetail);
-                    invoiceHeader.FileDetail = fileDetail;
-                    invoiceHeader.Details = fileDetail.Content;
-
-                    _context.Add(invoiceHeader);
-                    await _context.SaveChangesAsync();
-                }
+                _context.Add(invoiceHeader);
+                await _context.SaveChangesAsync();
 
                 return RedirectToAction("Index");
             }
@@ -205,7 +210,22 @@ namespace SagaXmlAdapter.Web.Controllers
                 return NotFound();
             }
 
+            // Populate dropdown contents
+            ViewBag.Provider = GetProviderDetails();
+            ViewBag.Client = GetClientDetails();
+
             var model = await _context.InvoiceHeader.SingleOrDefaultAsync(m => m.Id == id);
+
+            var file = _context.FileDetail.SingleOrDefault(m => m.Id == model.FileDetailId);
+            var details = _context.InvoiceDetail.Where(x => x.FileDetailId == file.Id).ToList();
+            var client = _context.Client.SingleOrDefault(c => c.Id == model.ClientId);
+            var provider = _context.Provider.SingleOrDefault(p => p.Id == model.ProviderId);
+
+            model.FileDetail = file;
+            model.Details = details;
+            model.FileDetail.FileName = file.FileName;
+            model.Client = client;
+            model.Provider = provider;
 
             if (model == null)
             {
@@ -220,9 +240,9 @@ namespace SagaXmlAdapter.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader, List<IFormFile> files, string ddlProvider, string ddlClient)
         {
-            if (id != invoiceHeader.Id)
+            if (id != invoiceHeader.Id && files == null)
             {
                 return NotFound();
             }
@@ -231,6 +251,28 @@ namespace SagaXmlAdapter.Web.Controllers
             {
                 try
                 {
+                    int selectedProviderId = 0;
+                    int selectedClientId = 0;
+                    var selectedProvider = new Provider();
+                    var selectedClient = new Client();
+
+                    // Get selected items
+                    if (int.TryParse(ddlProvider, out selectedProviderId))
+                    {
+                        selectedProvider = GetProviderById(selectedProviderId);
+                    }
+                    if (int.TryParse(ddlClient, out selectedClientId))
+                    {
+                        selectedClient = GetClientById(selectedClientId);
+                    }
+
+                    invoiceHeader.Client = selectedClient;
+                    invoiceHeader.Provider = selectedProvider;
+
+                    var uploadedFile = UploadFiles(files);
+                    invoiceHeader.FileDetail = uploadedFile;
+                    invoiceHeader.Details = uploadedFile.Content;
+
                     _context.Update(invoiceHeader);
                     await _context.SaveChangesAsync();
                 }
@@ -245,7 +287,7 @@ namespace SagaXmlAdapter.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                return View("Details", invoiceHeader);
             }
             return View(invoiceHeader);
         }
@@ -282,6 +324,35 @@ namespace SagaXmlAdapter.Web.Controllers
         private bool InvoiceHeaderExists(int id)
         {
             return _context.InvoiceHeader.Any(e => e.Id == id);
+        }
+
+        private FileDetail UploadFiles(List<IFormFile> files)
+        {
+            // Start processing uploaded file
+            var uploadPath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads" + "\\");
+
+            var fileDetail = new FileDetail();
+
+            foreach (var formFile in files)
+            {
+                if (formFile.Length > 0)
+                {
+                    var fileName = ContentDispositionHeaderValue.Parse(formFile.ContentDisposition).FileName.Trim('"');
+
+                    using (var inputStream = new StreamReader(formFile.OpenReadStream()))
+                    {
+                        var items = inputStream.ReadToEnd();
+
+                        fileDetail.FileName = fileName;
+                        fileDetail.FileType = formFile.ContentType;
+                        fileDetail.Length = Convert.ToInt32(formFile.Length);
+                        fileDetail.Content = ConvertCSVtoList(items);
+                    }
+                }
+            }
+            // Save uploaded file
+            _context.FileDetail.Add(fileDetail);
+            return fileDetail;
         }
 
         private List<InvoiceDetail> ConvertCSVtoList(string stream)
@@ -330,11 +401,11 @@ namespace SagaXmlAdapter.Web.Controllers
         {
             var xml = new XDocument();
 
-            var invoiceHeader =  _context.InvoiceHeader.SingleOrDefault(m => m.Id == invoiceId);
-            var file =  _context.FileDetail.SingleOrDefault(m => m.Id == invoiceHeader.FileDetailId);
-            var details =  _context.InvoiceDetail.Where(x => x.FileDetailId == file.Id).ToList();
-            var client =  _context.Client.SingleOrDefault(c => c.Id == invoiceHeader.ClientId);
-            var provider =  _context.Provider.SingleOrDefault(p => p.Id == invoiceHeader.ProviderId);
+            var invoiceHeader = _context.InvoiceHeader.SingleOrDefault(m => m.Id == invoiceId);
+            var file = _context.FileDetail.SingleOrDefault(m => m.Id == invoiceHeader.FileDetailId);
+            var details = _context.InvoiceDetail.Where(x => x.FileDetailId == file.Id).ToList();
+            var client = _context.Client.SingleOrDefault(c => c.Id == invoiceHeader.ClientId);
+            var provider = _context.Provider.SingleOrDefault(p => p.Id == invoiceHeader.ProviderId);
 
             invoiceHeader.FileDetail = file;
             invoiceHeader.Details = details;
