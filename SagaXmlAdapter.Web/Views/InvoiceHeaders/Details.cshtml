@@ -11,6 +11,18 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
+            @Html.DisplayNameFor(model => model.Provider)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Provider.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Client)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Client.Name)
+        </dd>
+        <dt>
             @Html.DisplayNameFor(model => model.Number)
         </dt>
         <dd>
@@ -100,9 +112,25 @@
         <dd>
             @Html.DisplayFor(model => model.PaymentMethod)
         </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FileDetail.FileName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FileDetail.FileName)
+        </dd>
     </dl>
+
+    @{await Html.RenderPartialAsync("_CsvTable", Model.Details);} 
+
+    <div style="float:right">
+        <button class="btn btn-info" type="button"
+                onclick="location.href='@Url.Action("ExportToXML", "InvoiceHeaders", new { ClientId=Model.ClientId, ProviderId=Model.ProviderId, invoiceId=Model.Id })'">
+            EXPORT
+        </button>
+    </div><br />
 </div>
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+        <a asp-action="Index">Back to List</a>
 </div>

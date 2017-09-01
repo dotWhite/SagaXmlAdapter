@@ -30,13 +30,13 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders
         public async Task<IActionResult> Index()
         {
-            var invoiceDetails = _context.InvoiceDetail.ToList();
             var model = await _context.InvoiceHeader.ToListAsync();
+            //var file = _context.FileDetail;
 
-            foreach (var item in model)
-            {
-                item.Details = invoiceDetails;
-            }
+            //foreach (var item in model)
+            //{
+            //    item.FileDetail = file;
+            //}
             return View(model);
         }
 
@@ -52,7 +52,7 @@ namespace SagaXmlAdapter.Web.Controllers
             return client;
         }
 
-        private List<SelectListItem> GetProviderDetails()
+        public List<SelectListItem> GetProviderDetails()
         {
             var selectList = new List<SelectListItem>();
             var getProviders = _context.Provider.ToList();
@@ -68,7 +68,7 @@ namespace SagaXmlAdapter.Web.Controllers
             return selectList;
         }
 
-        private List<SelectListItem> GetClientDetails()
+        public List<SelectListItem> GetClientDetails()
         {
             var selectList = new List<SelectListItem>();
             var getClients = _context.Client.ToList();
@@ -94,9 +94,19 @@ namespace SagaXmlAdapter.Web.Controllers
                 return NotFound();
             }
 
-            var invoiceHeader = await _context.InvoiceHeader
-                .SingleOrDefaultAsync(m => m.Id == id);
-            if (invoiceHeader == null)
+            var invoiceHeader = await _context.InvoiceHeader.SingleOrDefaultAsync(m => m.Id == id);
+            var file = await _context.FileDetail .SingleOrDefaultAsync(m => m.Id == invoiceHeader.FileDetailId);
+            var details = await _context.InvoiceDetail.Where(x => x.FileDetailId == file.Id).ToListAsync();
+            var client = await _context.Client.SingleOrDefaultAsync(c => c.Id == invoiceHeader.ClientId);
+            var provider = await _context.Provider.SingleOrDefaultAsync(p => p.Id == invoiceHeader.ProviderId);
+
+            invoiceHeader.FileDetail = file;
+            invoiceHeader.Details = details;
+            invoiceHeader.FileDetail.FileName = file.FileName;
+            invoiceHeader.Client = client;
+            invoiceHeader.Provider = provider;
+
+            if (invoiceHeader == null && details == null && client == null && provider == null)
             {
                 return NotFound();
             }
@@ -181,7 +191,7 @@ namespace SagaXmlAdapter.Web.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                return View("Create", invoiceHeader);
+                return RedirectToAction("Index");
             }
 
             return View(invoiceHeader);
@@ -302,9 +312,9 @@ namespace SagaXmlAdapter.Web.Controllers
             return invoices;
         }
 
-        public FileContentResult ExportToXML(string ddlProvider, string ddlClient)
+        public FileContentResult ExportToXML(string ProviderId, string ClientId, int invoiceId)
         {
-            var xml = ProcessListToXML(ddlProvider, ddlClient);
+            var xml = ProcessListToXML(ProviderId, ClientId, invoiceId);
 
             XDocument doc = XDocument.Parse(xml);
             var contentType = "application/xml";
@@ -316,38 +326,21 @@ namespace SagaXmlAdapter.Web.Controllers
             return result;
         }
 
-        private string ProcessListToXML(string sprovider, string sclient)
+        private string ProcessListToXML(string sprovider, string sclient, int invoiceId)
         {
             var xml = new XDocument();
-            var invoiceHeader = new InvoiceHeader();
-            var invoiceHeaderList = _context.InvoiceHeader.ToList();
-            if (invoiceHeaderList != null)
-            {
-                invoiceHeader = invoiceHeaderList.LastOrDefault();
-            }
 
-            int selectedProviderId = 0;
-            int selectedClientId = 0;
-            var selectedProvider = new Provider();
-            var selectedClient = new Client();
+            var invoiceHeader =  _context.InvoiceHeader.SingleOrDefault(m => m.Id == invoiceId);
+            var file =  _context.FileDetail.SingleOrDefault(m => m.Id == invoiceHeader.FileDetailId);
+            var details =  _context.InvoiceDetail.Where(x => x.FileDetailId == file.Id).ToList();
+            var client =  _context.Client.SingleOrDefault(c => c.Id == invoiceHeader.ClientId);
+            var provider =  _context.Provider.SingleOrDefault(p => p.Id == invoiceHeader.ProviderId);
 
-            // Get selected items
-            if (int.TryParse(sprovider, out selectedProviderId))
-            {
-                selectedProvider = GetProviderById(selectedProviderId);
-            }
-            if (int.TryParse(sclient, out selectedClientId))
-            {
-                selectedClient = GetClientById(selectedClientId);
-            }
-
-            invoiceHeader.Client = selectedClient;
-            invoiceHeader.Provider = selectedProvider;
-            var file = _context.FileDetail.Select(x => x.Content);
-            if (file != null)
-            {
-                invoiceHeader.Details = file.LastOrDefault();
-            }
+            invoiceHeader.FileDetail = file;
+            invoiceHeader.Details = details;
+            invoiceHeader.FileDetail.FileName = file.FileName;
+            invoiceHeader.Client = client;
+            invoiceHeader.Provider = provider;
 
             xml = new XDocument(new XDeclaration("1.0", "UTF - 8", "yes"),
                 new XElement("Facturi",
@@ -380,7 +373,7 @@ namespace SagaXmlAdapter.Web.Controllers
                         new XElement("FacturaCotaTVA", invoiceHeader.VAT),
                         new XElement("FacturaGreutate", invoiceHeader.Weight)),
 
-                    new XElement("Detali",
+                    new XElement("Detalii",
                         from detail in invoiceHeader.Details
                         select new XElement("Continut",
                                 new XElement("Linie",

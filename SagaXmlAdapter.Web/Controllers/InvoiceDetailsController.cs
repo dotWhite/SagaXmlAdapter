@@ -17,10 +17,12 @@ namespace SagaXmlAdapter.Web.Controllers
     public class InvoiceDetailsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly InvoiceHeadersController invoiceHeader;
 
-        public InvoiceDetailsController(ApplicationDbContext context)
+        public InvoiceDetailsController(ApplicationDbContext context, InvoiceHeadersController invoiceHeader)
         {
             _context = context;
+            invoiceHeader = invoiceHeader;
         }
 
         // GET: InvoiceDetails
@@ -100,7 +102,10 @@ namespace SagaXmlAdapter.Web.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {
+                {   // Populate dropdown contents
+                    ViewBag.Provider = invoiceHeader.GetProviderDetails();
+                    ViewBag.Client = invoiceHeader.GetClientDetails();
+
                     _context.Update(invoiceDetail);
                     await _context.SaveChangesAsync();
                 }
@@ -115,7 +120,8 @@ namespace SagaXmlAdapter.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                //return RedirectToAction("Index");
+                return View("../InvoiceHeaders/Create");
             }
             return View(invoiceDetail);
         }

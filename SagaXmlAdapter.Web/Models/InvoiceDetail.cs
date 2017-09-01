@@ -22,5 +22,6 @@ namespace SagaXmlAdapter.Web.Models
 
         public List<SelectListItem> ProviderList { get; set; }
         public List<SelectListItem> ClientList { get; set; }
+        public int FileDetailId { get; set; }
     }
 }

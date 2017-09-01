@@ -38,6 +38,9 @@ namespace SagaXmlAdapter.Web.Models
         public string PaymentMethod { get; set; }
 
         public bool showInvoiceDetails { get; set; }
+        public int FileDetailId { get; set; }
+        public int ClientId { get; set; }
+        public int ProviderId { get; set; }
 
     }
 }
