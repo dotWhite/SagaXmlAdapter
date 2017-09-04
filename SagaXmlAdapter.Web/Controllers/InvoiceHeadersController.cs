@@ -392,7 +392,8 @@ namespace SagaXmlAdapter.Web.Controllers
             var content = xml.ToString();
             var bytes = Encoding.UTF8.GetBytes(content);
             var result = new FileContentResult(bytes, contentType);
-            result.FileDownloadName = "Invoice.xml";
+            var currentDate = DateTime.Now.ToString("MMddyyyy");
+            result.FileDownloadName = "Invoice_" + currentDate + "_" + Guid.NewGuid() + ".xml";
 
             return result;
         }
