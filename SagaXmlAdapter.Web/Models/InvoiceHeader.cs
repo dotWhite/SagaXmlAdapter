@@ -13,7 +13,9 @@ namespace SagaXmlAdapter.Web.Models
     {
         public int Id { get; set; }
         public string Number { get; set; }
+        [DataType(DataType.Date)]
         public DateTime IssueDate { get; set; }
+        [DataType(DataType.Date)]
         public DateTime DueDate { get; set; }
         public bool InversTaxing { get; set; }
         public bool VatCollecting { get; set; }
@@ -37,8 +39,8 @@ namespace SagaXmlAdapter.Web.Models
         public string ClientSoldInfo { get; set; }
         public string PaymentMethod { get; set; }
 
-        public bool showInvoiceDetails { get; set; }
-        public int FileDetailId { get; set; }
+        public bool isPost { get; set; }
+        public int? FileDetailId { get; set; }
         public int ClientId { get; set; }
         public int ProviderId { get; set; }
 

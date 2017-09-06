@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Net.Http.Headers;
 using System.Xml.Linq;
+using Kendo.Mvc.UI;
 
 namespace SagaXmlAdapter.Web.Controllers
 {
@@ -77,7 +78,6 @@ namespace SagaXmlAdapter.Web.Controllers
 
             return selectList;
         }
-
 
         // GET: InvoiceHeaders/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -152,7 +152,7 @@ namespace SagaXmlAdapter.Web.Controllers
             var invoiceHeader = new InvoiceHeader();
             var invoiceDetails = _context.InvoiceDetail.ToList();
             invoiceHeader.Details = invoiceDetails;
-            invoiceHeader.showInvoiceDetails = false;
+            invoiceHeader.isPost = false;
 
             return View(invoiceHeader);
         }
@@ -169,7 +169,7 @@ namespace SagaXmlAdapter.Web.Controllers
                 // Populate dropdown contents
                 ViewBag.Provider = GetProviderDetails();
                 ViewBag.Client = GetClientDetails();
-
+                
                 int selectedProviderId = 0;
                 int selectedClientId = 0;
                 var selectedProvider = new Provider();
@@ -187,11 +187,11 @@ namespace SagaXmlAdapter.Web.Controllers
 
                 invoiceHeader.Client = selectedClient;
                 invoiceHeader.Provider = selectedProvider;
-                invoiceHeader.showInvoiceDetails = true;
 
                 var fileUploaded = UploadFiles(files);
                 invoiceHeader.FileDetail = fileUploaded;
                 invoiceHeader.Details = fileUploaded.Content;
+                invoiceHeader.isPost = true;
 
                 _context.Add(invoiceHeader);
                 await _context.SaveChangesAsync();
@@ -226,6 +226,7 @@ namespace SagaXmlAdapter.Web.Controllers
             model.FileDetail.FileName = file.FileName;
             model.Client = client;
             model.Provider = provider;
+            model.isPost = true;
 
             if (model == null)
             {
@@ -240,38 +241,50 @@ namespace SagaXmlAdapter.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader, List<IFormFile> files, string ddlProvider, string ddlClient)
+        public async Task<IActionResult> Edit(int id, int ddlProvider, int ddlClient, List<IFormFile> files,
+            [Bind("ProviderId,ClientId,FileDetailId,Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader)
         {
-            if (id != invoiceHeader.Id && files == null)
+            if (id != invoiceHeader.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (ddlClient != 0 && ddlClient != invoiceHeader.ClientId) { invoiceHeader.ClientId = ddlClient; }
+            if (ddlProvider != 0 && ddlProvider != invoiceHeader.ProviderId) { invoiceHeader.ProviderId = ddlProvider; }
+
+            if(ddlProvider == 0 && ddlClient == 0)
             {
+                ModelState.Remove("ddlProvider");
+                ModelState.Remove("ddlClient");
+            }
+
+            if (ModelState.IsValid)
+            {          
                 try
                 {
-                    int selectedProviderId = 0;
-                    int selectedClientId = 0;
-                    var selectedProvider = new Provider();
-                    var selectedClient = new Client();
-
-                    // Get selected items
-                    if (int.TryParse(ddlProvider, out selectedProviderId))
+                    if (files.Count > 0)
                     {
-                        selectedProvider = GetProviderById(selectedProviderId);
+                        var fileDetails = UploadFiles(files);
+                        invoiceHeader.FileDetailId = fileDetails.Id;
+                        invoiceHeader.Details = fileDetails.Content;
                     }
-                    if (int.TryParse(ddlClient, out selectedClientId))
+                    else
                     {
-                        selectedClient = GetClientById(selectedClientId);
+                        var getFile = _context.FileDetail.SingleOrDefault(x => x.Id == invoiceHeader.FileDetailId);
+                        if(getFile != null)
+                        {
+                            var getDetails = _context.InvoiceDetail.Where(x => x.FileDetailId == getFile.Id).ToList();
+                            if (getDetails != null)
+                            {
+                                invoiceHeader.Details = getDetails;
+                                invoiceHeader.FileDetailId = getFile.Id;
+                            }
+                        }
                     }
 
-                    invoiceHeader.Client = selectedClient;
-                    invoiceHeader.Provider = selectedProvider;
-
-                    var uploadedFile = UploadFiles(files);
-                    invoiceHeader.FileDetail = uploadedFile;
-                    invoiceHeader.Details = uploadedFile.Content;
+                    invoiceHeader.Client = GetClientById(invoiceHeader.ClientId);
+                    invoiceHeader.Provider = GetProviderById(invoiceHeader.ProviderId);
+                    invoiceHeader.isPost = false;
 
                     _context.Update(invoiceHeader);
                     await _context.SaveChangesAsync();

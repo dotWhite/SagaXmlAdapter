@@ -12,24 +12,13 @@
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="@Model.FileDetailId" />
+        <input type="hidden" asp-for="@Model.ClientId" />
+        <input type="hidden" asp-for="@Model.ProviderId" />
 
         @using (Html.BeginForm())
         {
             <div>
-                <div>
-                    <ul>
-                        <li>
-                            <div>
-                                @Html.Label("Provider*")
-                                <div>
-                                    @Html.DropDownList("ddlProvider", new SelectList(ViewBag.Provider, "Value", "Text"), "Please select a Provider")
-                                    <button type="submit" value="See Provider Details" onclick="javascript: ProviderDetails(); return false;" class="btn btn-default">See Provider Details</button>
-                                </div>
-                                <div id="provider-display"></div> <br />
-                            </div>
-                        </li>
-                    </ul>
-                </div>
                 <div>
                     <ul>
                         <li>
@@ -44,9 +33,38 @@
                         </li>
                     </ul>
                 </div>
+                <div>
+                    <ul>
+                        <li>
+                            <div>
+                                @Html.Label("Provider*")
+                                <div>
+                                    @Html.DropDownList("ddlProvider", new SelectList(ViewBag.Provider, "Value", "Text"), "Please select a Provider")
+                                    <button type="submit" value="See Provider Details" onclick="javascript: ProviderDetails(); return false;" class="btn btn-default">See Provider Details</button>
+                                </div>
+                                <div id="provider-display"></div> <br />
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         }
 
+        @if (Model.isPost)
+        {
+            <div class="form-group">
+                <label asp-for="Client" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <span>@Model.Client.Name</span>
+                </div>
+            </div><br />
+            <div class="form-group">
+                <label asp-for="Provider" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <span>@Model.Provider.Name</span>
+                </div>
+            </div><br />
+        }
 
         <div class="form-group">
             <label asp-for="Number" class="col-md-2 control-label"></label>
@@ -155,12 +173,25 @@
                 <span asp-validation-for="PaymentMethod" class="text-danger"></span>
             </div>
         </div>
+
+        @if (Model.isPost)
+        {
+            <div class="form-group">
+                <label asp-for="FileDetail" class="col-md-2 control-label">Uploaded file</label>
+                <div class="col-md-10">
+                    <span>@Model.FileDetail.FileName</span>
+                </div>
+            </div>
+        }
+
         <div class="form-group">
-            <label asp-for="FileDetail" class="col-md-2 control-label">Upload file:</label>
+            <label asp-for="FileDetail" class="col-md-2 control-label">Upload file</label>
             <div class="col-md-10">
                 <input type="file" name="files" asp-for="FileDetail" multiple />
             </div>
         </div><br />
+
+    
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
@@ -238,5 +269,5 @@
 
         @*@{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}*@
 
-    </script>
+</script>
 }
