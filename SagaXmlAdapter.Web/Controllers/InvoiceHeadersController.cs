@@ -187,6 +187,8 @@ namespace SagaXmlAdapter.Web.Controllers
 
                 invoiceHeader.Client = selectedClient;
                 invoiceHeader.Provider = selectedProvider;
+                invoiceHeader.ClientId = selectedClientId;
+                invoiceHeader.ProviderId = selectedProviderId;
 
                 var fileUploaded = UploadFiles(files);
                 invoiceHeader.FileDetail = fileUploaded;

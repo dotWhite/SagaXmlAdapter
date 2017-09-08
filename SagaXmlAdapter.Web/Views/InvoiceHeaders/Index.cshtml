@@ -8,6 +8,8 @@
 
 <p>
     <a asp-action="Create">Create New</a>
+    <input type="hidden" asp-for="@Model.First().ClientId" />
+    <input type="hidden" asp-for="@Model.First().ProviderId" />
 </p>
 
 <table class="table">
