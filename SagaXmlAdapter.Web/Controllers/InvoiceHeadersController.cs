@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Net.Http.Headers;
 using System.Xml.Linq;
-using Kendo.Mvc.UI;
 
 namespace SagaXmlAdapter.Web.Controllers
 {
@@ -31,7 +30,15 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.InvoiceHeader.ToListAsync());
+            var getFileName = new FileDetail();
+            var model = await _context.InvoiceHeader.ToListAsync();
+            foreach(var file in model)
+            {
+                file.FileDetail = _context.FileDetail.SingleOrDefault(x => x.Id == file.FileDetailId);
+            }
+
+            
+            return View(model);
         }
 
         public Provider GetProviderById(int id)
@@ -146,8 +153,31 @@ namespace SagaXmlAdapter.Web.Controllers
         // GET: InvoiceHeaders/Create
         public IActionResult Create()
         {
-            ViewBag.Provider = GetProviderDetails();
-            ViewBag.Client = GetClientDetails();
+
+            var filteredProviders = new List<SelectListItem>();
+            var filteredClients = new List<SelectListItem>();
+
+            var providers = GetProviderDetails();
+            var clients = GetClientDetails();
+
+            foreach (var provider in providers)
+            {
+                if (provider.Text != null)
+                {
+                    filteredProviders.Add(provider);
+                }
+            }
+
+            foreach (var client in clients)
+            {
+                if (client.Text != null)
+                {
+                    filteredClients.Add(client);
+                }
+            }
+
+            ViewBag.Provider = filteredProviders;
+            ViewBag.Client = filteredClients;
 
             var invoiceHeader = new InvoiceHeader();
             var invoiceDetails = _context.InvoiceDetail.ToList();
@@ -162,7 +192,8 @@ namespace SagaXmlAdapter.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader, List<IFormFile> files, string ddlProvider, string ddlClient)
+        public async Task<IActionResult> Create([Bind("Id,Number,IssueDate,DueDate,InversTaxing,VatCollecting,Description,Currecy,VAT,Weight,TotalValue,TotalVat,TotalAmount,Observations,ClientSoldInfo,PaymentMethod")] InvoiceHeader invoiceHeader,
+            List<IFormFile> files, string ddlProvider, string ddlClient)
         {
             if (ModelState.IsValid)
             {
@@ -175,7 +206,7 @@ namespace SagaXmlAdapter.Web.Controllers
                 var selectedProvider = new Provider();
                 var selectedClient = new Client();
 
-                // Get selected items
+
                 if (int.TryParse(ddlProvider, out selectedProviderId))
                 {
                     selectedProvider = GetProviderById(selectedProviderId);
@@ -254,11 +285,8 @@ namespace SagaXmlAdapter.Web.Controllers
             if (ddlClient != 0 && ddlClient != invoiceHeader.ClientId) { invoiceHeader.ClientId = ddlClient; }
             if (ddlProvider != 0 && ddlProvider != invoiceHeader.ProviderId) { invoiceHeader.ProviderId = ddlProvider; }
 
-            if(ddlProvider == 0 && ddlClient == 0)
-            {
-                ModelState.Remove("ddlProvider");
-                ModelState.Remove("ddlClient");
-            }
+            if(ddlProvider == 0) { ModelState.Remove("ddlProvider"); }
+            if(ddlClient == 0) { ModelState.Remove("ddlClient"); }
 
             if (ModelState.IsValid)
             {          
