@@ -217,6 +217,7 @@
 
         function ProviderDetails() {
             var selectedId = $("#ddlProvider").val();
+            $("#provider-display").toggle();
 
             if (selectedId !== "" && selectedId !== 0 && selectedId !== undefined) {
                 $.post("/InvoiceHeaders/GetProviderById", { id: selectedId },
@@ -240,6 +241,7 @@
 
         function ClientDetails() {
             var selectedId = $("#ddlClient").val();
+            $("#client-display").toggle();
 
             if (selectedId !== "" && selectedId !== 0 && selectedId !== undefined) {
                 $.post("/InvoiceHeaders/GetClientById", { id: selectedId },
