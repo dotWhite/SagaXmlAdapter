@@ -9,6 +9,7 @@
 <div>
     <h4>InvoiceDetail</h4>
     <hr />
+    <input type="hidden" asp-for="@Model.Id" />
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Number)
@@ -87,6 +88,14 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Observations)
+        </dd>
+
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Id)
         </dd>
     </dl>
 </div>

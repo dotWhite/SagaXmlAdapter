@@ -6,130 +6,265 @@
 
 <h2>Create</h2>
 
-<form asp-action="Create">
+<form asp-action="Create" enctype="multipart/form-data">
     <div class="form-horizontal">
         <h4>InvoiceHeader</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="Number" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Number" class="form-control" />
-                <span asp-validation-for="Number" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="IssueDate" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="IssueDate" class="form-control" />
-                <span asp-validation-for="IssueDate" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="DueDate" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="DueDate" class="form-control" />
-                <span asp-validation-for="DueDate" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <input asp-for="InversTaxing" />
-                    <label asp-for="InversTaxing"></label>
+
+            @using (Html.BeginForm())
+            {
+                <div>
+                    <div>
+                        <ul>
+                            <li>
+                                <div>
+                                    @Html.Label("Provider*")
+                                    <div>
+                                        @Html.DropDownList("ddlProvider", new SelectList(ViewBag.Provider, "Value", "Text"), "Please select a Provider")
+                                        <button type="submit" value="See Provider Details" onclick="javascript: ProviderDetails(); return false;" class="btn btn-default">See Provider Details</button>
+                                    </div>
+                                    <div id="provider-display"></div> <br />
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <ul>
+                            <li>
+                                <div>
+                                    @Html.Label("Client*")
+                                    <div>
+                                        @Html.DropDownList("ddlClient", new SelectList(ViewBag.Client, "Value", "Text"), "Please select a Client")
+                                        <button type="submit" value="See Client Details" onclick="javascript: ClientDetails(); return false;" class="btn btn-default">See Client Details</button>
+                                    </div>
+                                    <div id="client-display"></div> <br />
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            }
+        
+
+            <div class="form-group">
+                <label asp-for="Number" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Number" class="form-control" />
+                    <span asp-validation-for="Number" class="text-danger"></span>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <div class="checkbox">
-                    <input asp-for="VatCollecting" />
-                    <label asp-for="VatCollecting"></label>
+            <div class="form-group">
+                <label asp-for="IssueDate" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="IssueDate" class="form-control" />
+                    <span asp-validation-for="IssueDate" class="text-danger"></span>
                 </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Description" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="DueDate" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="DueDate" class="form-control" />
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Currecy" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Currecy" class="form-control" />
-                <span asp-validation-for="Currecy" class="text-danger"></span>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="checkbox">
+                        <input asp-for="InversTaxing" />
+                        <label asp-for="InversTaxing"></label>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="VAT" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="VAT" class="form-control" />
-                <span asp-validation-for="VAT" class="text-danger"></span>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="checkbox">
+                        <input asp-for="VatCollecting" />
+                        <label asp-for="VatCollecting"></label>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Weight" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Weight" class="form-control" />
-                <span asp-validation-for="Weight" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="Description" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="TotalValue" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="TotalValue" class="form-control" />
-                <span asp-validation-for="TotalValue" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="Currecy" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Currecy" class="form-control" />
+                    <span asp-validation-for="Currecy" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="TotalVat" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="TotalVat" class="form-control" />
-                <span asp-validation-for="TotalVat" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="VAT" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="VAT" class="form-control" />
+                    <span asp-validation-for="VAT" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="TotalAmount" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="Weight" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Weight" class="form-control" />
+                    <span asp-validation-for="Weight" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Observations" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Observations" class="form-control" />
-                <span asp-validation-for="Observations" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="TotalValue" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="TotalValue" class="form-control" />
+                    <span asp-validation-for="TotalValue" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="ClientSoldInfo" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="ClientSoldInfo" class="form-control" />
-                <span asp-validation-for="ClientSoldInfo" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="TotalVat" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="TotalVat" class="form-control" />
+                    <span asp-validation-for="TotalVat" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PaymentMethod" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PaymentMethod" class="form-control" />
-                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="TotalAmount" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="TotalAmount" class="form-control" />
+                    <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+            <div class="form-group">
+                <label asp-for="Observations" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="Observations" class="form-control" />
+                    <span asp-validation-for="Observations" class="text-danger"></span>
+                </div>
             </div>
+            <div class="form-group">
+                <label asp-for="ClientSoldInfo" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="ClientSoldInfo" class="form-control" />
+                    <span asp-validation-for="ClientSoldInfo" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="PaymentMethod" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <input asp-for="PaymentMethod" class="form-control" />
+                    <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                </div>
+            </div>
+            @if (Model.isPost && Model.FileDetail != null)
+            {
+                <div class="form-group">
+                    <label asp-for="FileDetail" class="col-md-2 control-label">Uploaded file</label>
+                    <div class="col-md-10">
+                        <span>@Model.FileDetail.FileName</span>
+                    </div>
+                </div><br />
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="FileDetail" class="col-md-2 control-label">Upload file:</label>
+                    <div class="col-md-10">
+                        <input type="file" id="FileUpload" name="files" asp-for="FileDetail" multiple />
+                    </div>
+                </div><br />
+            }
+
+
+            <div class="form-group">
+                @{ if (Model.isPost)
+                    {
+                        <div id="showInvoice">
+                            @{await Html.RenderPartialAsync("_CsvTable", Model.Details);}
+                            <div style="float:right">
+
+                                <input type="submit" value="Export" asp-action="ExportToXML" asp-controller="InvoiceHeaders" />
+                            </div>
+                        </div>
+                                }
+                }
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Save" class="btn btn-default" />
+                </div>
+            </div>
+
+
         </div>
-    </div>
 </form>
 
 <div>
+
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript" language="javascript">
+
+        $('#ddlProvider').change(function () {
+            var selectedItem = $("#lbltxt").text($("#ddlProvider option:selected").text());
+            var dropdownItems = $("#ddlProvider").text();
+            return false;
+        });
+
+        $('#ddlClient').change(function () {
+            var selectedItem = $("#lbltxt").text($("#ddlClient option:selected").text());
+            var dropdownItems = $("#ddlClient").text();
+            return false;
+        });
+
+        function ProviderDetails() {
+            var selectedId = $("#ddlProvider").val();
+            $("#provider-display").toggle();
+
+            if (selectedId !== "" && selectedId !== 0 && selectedId !== undefined) {
+                $.post("/InvoiceHeaders/GetProviderById", { id: selectedId },
+                    function (data) {
+                        if (data) {
+                            if (!data.capital) { data.capital = ""; }
+                            if (!data.address) { data.address = ""; }
+                            if (!data.bank) { data.bank = ""; }
+                            if (!data.cif) { data.cif = ""; }
+                            if (!data.iban) { data.iban = ""; }
+                            if (!data.name) { data.name = ""; }
+                            if (!data.regNumber) { data.regNumber = ""; }
+                            if (!data.description) { data.description = ""; }
+                            if (!data.tenant) { data.tenant = ""; }
+                            var dataDisplayElement = '<div class="data-wrapper"> <br/><div><b>Capital:</b> ' + data.capital + '</div><div><b>Address:</b> ' + data.address + '</div><div><b>Bank:</b> ' + data.bank + '</div><div><b>CIF:</b> ' + data.cif + '</div><div><b>IBAN:</b> ' + data.iban + '</div><div><b>Name:</b>' + data.name + '</div><div><b>Register Number:</b>' + data.regNumber + '</div><div><b>Description:</b> ' + data.description + '</div><div><b>Tenant:</b>' + data.tenant + '</div></div >';
+                            document.getElementById('provider-display').innerHTML = dataDisplayElement;
+                        }
+                    });
+            }
+        }
+
+        function ClientDetails() {
+            var selectedId = $("#ddlClient").val();
+            $("#client-display").toggle();
+
+            if (selectedId !== "" && selectedId !== 0 && selectedId !== undefined) {
+                $.post("/InvoiceHeaders/GetClientById", { id: selectedId },
+                    function (data) {
+                        if (data) {
+                            if (!data.address) { data.address = ""; }
+                            if (!data.bank) { data.bank = ""; }
+                            if (!data.cif) { data.cif = ""; }
+                            if (!data.iban) { data.iban = ""; }
+                            if (!data.name) { data.name = ""; }
+                            if (!data.regNumber) { data.regNumber = ""; }
+                            if (!data.description) { data.description = ""; }
+                            if (!data.tenant) { data.tenant = ""; }
+                            var dataDisplayElement = '<div class="data-wrapper"> <br/></div><div><b>Address:</b> ' + data.address + '</div><div><b>Bank:</b> ' + data.bank + '</div><div><b>CIF:</b> ' + data.cif + '</div><div><b>IBAN:</b> ' + data.iban + '</div><div><b>Name:</b>' + data.name + '</div><div><b>Register Number:</b>' + data.regNumber + '</div><div><b>Description:</b> ' + data.description + '</div><div><b>Tenant:</b>' + data.tenant + '</div></div >';
+                            document.getElementById('client-display').innerHTML = dataDisplayElement;
+                        }
+                    });
+            }
+        }
+
+        
+
+        @*@{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}*@
+
+    </script>
 }

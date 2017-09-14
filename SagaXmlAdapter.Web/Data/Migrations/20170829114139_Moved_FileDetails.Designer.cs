@@ -8,9 +8,10 @@ using SagaXmlAdapter.Web.Data;
 namespace SagaXmlAdapter.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170829114139_Moved_FileDetails")]
+    partial class Moved_FileDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -203,7 +204,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
 
             modelBuilder.Entity("SagaXmlAdapter.Web.Models.FileDetail", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("FileName");
@@ -230,7 +231,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
 
                     b.Property<string>("CodeProvider");
 
-                    b.Property<int>("FileDetailId");
+                    b.Property<int?>("FileDetailId");
 
                     b.Property<int?>("InvoiceHeaderId");
 
@@ -266,7 +267,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ClientId");
+                    b.Property<int?>("ClientId");
 
                     b.Property<string>("ClientSoldInfo");
 
@@ -288,7 +289,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
 
                     b.Property<string>("PaymentMethod");
 
-                    b.Property<int>("ProviderId");
+                    b.Property<int?>("ProviderId");
 
                     b.Property<int?>("TenantId");
 
@@ -304,7 +305,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
 
                     b.Property<decimal>("Weight");
 
-                    b.Property<bool>("isPost");
+                    b.Property<bool>("showInvoiceDetails");
 
                     b.HasKey("Id");
 
@@ -413,8 +414,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
                 {
                     b.HasOne("SagaXmlAdapter.Web.Models.FileDetail")
                         .WithMany("Content")
-                        .HasForeignKey("FileDetailId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("FileDetailId");
 
                     b.HasOne("SagaXmlAdapter.Web.Models.InvoiceHeader")
                         .WithMany("Details")
@@ -425,8 +425,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
                 {
                     b.HasOne("SagaXmlAdapter.Web.Models.Client", "Client")
                         .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ClientId");
 
                     b.HasOne("SagaXmlAdapter.Web.Models.FileDetail", "FileDetail")
                         .WithMany()
@@ -434,8 +433,7 @@ namespace SagaXmlAdapter.Web.Data.Migrations
 
                     b.HasOne("SagaXmlAdapter.Web.Models.Provider", "Provider")
                         .WithMany()
-                        .HasForeignKey("ProviderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ProviderId");
 
                     b.HasOne("SagaXmlAdapter.Web.Models.Tenant", "Tenant")
                         .WithMany()

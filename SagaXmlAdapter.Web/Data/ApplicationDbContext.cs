@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SagaXmlAdapter.Web.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace SagaXmlAdapter.Web.Data
 {
@@ -21,6 +22,8 @@ namespace SagaXmlAdapter.Web.Data
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
+            builder.Ignore<SelectListItem>();
+            builder.Ignore<SelectListGroup>();
         }
 
         public DbSet<SagaXmlAdapter.Web.Models.Client> Client { get; set; }
@@ -32,5 +35,8 @@ namespace SagaXmlAdapter.Web.Data
         public DbSet<SagaXmlAdapter.Web.Models.InvoiceHeader> InvoiceHeader { get; set; }
 
         public DbSet<SagaXmlAdapter.Web.Models.InvoiceDetail> InvoiceDetail { get; set; }
+
+        public DbSet<SagaXmlAdapter.Web.Models.FileDetail> FileDetail { get; set; }
+
     }
 }

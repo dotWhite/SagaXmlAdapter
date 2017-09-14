@@ -11,7 +11,8 @@
         <h4>InvoiceDetail</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Id" />    
+        <input type="hidden" asp-for="@Model.InvoiceHeaderId" />
         <div class="form-group">
             <label asp-for="Number" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -103,6 +104,8 @@
                 <span asp-validation-for="Observations" class="text-danger"></span>
             </div>
         </div>
+ 
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
@@ -112,7 +115,8 @@
 </form>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">-Back to Index - Invoice Details</a><br />
+    <a asp-controller="InvoiceHeaders" asp-action="Create">-Back to Create Invoice Header</a>
 </div>
 
 @section Scripts {

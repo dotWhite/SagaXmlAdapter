@@ -7,23 +7,29 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SagaXmlAdapter.Web.Data;
 using SagaXmlAdapter.Web.Models;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http.Headers;
 
 namespace SagaXmlAdapter.Web.Controllers
 {
     public class InvoiceDetailsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly InvoiceHeadersController invoiceHeader;
 
-        public InvoiceDetailsController(ApplicationDbContext context)
+        public InvoiceDetailsController(ApplicationDbContext context, InvoiceHeadersController invoiceHeader)
         {
-            _context = context;    
+            _context = context;
+            invoiceHeader = invoiceHeader;
         }
 
         // GET: InvoiceDetails
         public async Task<IActionResult> Index()
         {
             return View(await _context.InvoiceDetail.ToListAsync());
-        }
+        } 
 
         // GET: InvoiceDetails/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -73,8 +79,8 @@ namespace SagaXmlAdapter.Web.Controllers
                 return NotFound();
             }
 
-            var invoiceDetail = await _context.InvoiceDetail.SingleOrDefaultAsync(m => m.Id == id);
-            if (invoiceDetail == null)
+            var invoiceDetail = await _context.InvoiceDetail.SingleOrDefaultAsync(m => m.Id == id);  
+            if(invoiceDetail == null)
             {
                 return NotFound();
             }
@@ -96,7 +102,10 @@ namespace SagaXmlAdapter.Web.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {
+                {   // Populate dropdown contents
+                    ViewBag.Provider = invoiceHeader.GetProviderDetails();
+                    ViewBag.Client = invoiceHeader.GetClientDetails();
+
                     _context.Update(invoiceDetail);
                     await _context.SaveChangesAsync();
                 }
@@ -111,7 +120,8 @@ namespace SagaXmlAdapter.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index");
+                //return RedirectToAction("Index");
+                return View("../InvoiceHeaders/Create");
             }
             return View(invoiceDetail);
         }

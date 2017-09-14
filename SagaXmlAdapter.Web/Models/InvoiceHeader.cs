@@ -1,21 +1,21 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace SagaXmlAdapter.Web.Models
 {
     public class InvoiceHeader
     {
         public int Id { get; set; }
-        public virtual Tenant Tenant { get; set; }
-
-        public virtual Provider Provider { get; set; }
-        public virtual Client Client { get; set; }
-
         public string Number { get; set; }
+        [DataType(DataType.Date)]
         public DateTime IssueDate { get; set; }
+        [DataType(DataType.Date)]
         public DateTime DueDate { get; set; }
         public bool InversTaxing { get; set; }
         public bool VatCollecting { get; set; }
@@ -24,7 +24,12 @@ namespace SagaXmlAdapter.Web.Models
         public decimal VAT { get; set; }
         public decimal Weight { get; set; }
 
-        public ICollection<InvoiceDetail> Details { get; private set; }
+        public virtual Tenant Tenant { get; set; }
+        public virtual Provider Provider { get; set; }
+        public virtual Client Client { get; set; }
+        public virtual FileDetail FileDetail { get; set; }
+
+        public ICollection<InvoiceDetail> Details { get; set; }
 
         public decimal TotalValue { get; set; }
         public decimal TotalVat { get; set; }
@@ -33,5 +38,11 @@ namespace SagaXmlAdapter.Web.Models
         public string Observations { get; set; }
         public string ClientSoldInfo { get; set; }
         public string PaymentMethod { get; set; }
+
+        public bool isPost { get; set; }
+        public int? FileDetailId { get; set; }
+        public int ClientId { get; set; }
+        public int ProviderId { get; set; }
+
     }
 }
